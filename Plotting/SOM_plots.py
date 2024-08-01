@@ -1,19 +1,37 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import Union
 
-def SOM_gird_avg_wavefrom_per_cell(input_data, nunr_file_input, grid_x_dim, grid_y_dim, x_dim_data_cube, output_img, is_struct_array = True):
+def SOM_gird_avg_wavefrom_per_cell(input_data: np.ndarray, 
+                                   nunr_file_input: str, 
+                                   grid_x_dim: int, 
+                                   grid_y_dim: int, 
+                                   x_dim_data_cube: int, 
+                                   output_img_name: str, 
+                                   is_struct_array = True):
     """
+    Generates image of the average waveform for each cell in the SOM grid.
+
     This function take in a nunr file from NeuroScope and converts it into a useful format to us
     Then it uses the data in the nunr file to identify which data samples belong to each PE
     Finally it takes this data and plots it such that we can overlay any data we want.
 
-    input_data:      waveforms (peaks, peaklets)
-    nunr_file_input: text file output from neuroscope
-    grid_x_dim:      SOM x-dimension
-    grid_y_dim:      SOM y-dimension
-    x_dim_data_cube: x-dimension of the input data cube for the SOM
-    output_img:      name of file to save the image to
-    is_struct_array: does the data need to be accessed as peaks['data']?
+    Parameters
+    ----------
+    input_data : int
+        waveforms (peaks, peaklets)
+    nunr_file_input : str 
+        text file output from neuroscope
+    grid_x_dim : int   
+        SOM x-dimension
+    grid_y_dim: int  
+        SOM y-dimension
+    x_dim_data_cube : int 
+        x-dimension of the input data cube for the SOM
+    output_img_name : str      
+        name of file to save the image to + path
+    is_struct_array : bool 
+        does the data need to be accessed as peaks['data']?
     """
     
     # Import nunr file and convert it into a useful format
@@ -55,11 +73,24 @@ def SOM_gird_avg_wavefrom_per_cell(input_data, nunr_file_input, grid_x_dim, grid
                 ax[i,j].set_xlim(0, data_dim)
             ax[i,j].axis('off')
 
-    fig.savefig(output_img, bbox_inches='tight')
+    fig.savefig(output_img_name, bbox_inches='tight')
     
-def calculate_u_matrix(weight_cube):
+def calculate_u_matrix(weight_cube: np.ndarray):
     """
-    Calculate the fences for SOM visualization.
+    Calculate the distance (fences) for each adjacent neuron in an SOM.
+
+    (Need to review this function, dont fully remember what is going on in the
+    implementation)
+
+    Parameters
+    ----------
+    weight_cube : np.ndarray
+        The weight cube for the SOM
+
+    Returns
+    -------
+    u_matrix : np.ndarray
+        The distance matrix for neurons in the SOM
     """
     x, y, _ = weight_cube.shape
     u_matrix = np.zeros((x, y))
@@ -81,13 +112,29 @@ def calculate_u_matrix(weight_cube):
 
     return u_matrix
 
-def calculate_density_matrix(weight_cube, u_matrix, dataset):
+def calculate_density_matrix(weight_cube: np.ndarray, 
+                             u_matrix: np.ndarray, 
+                             dataset: np.ndarray) -> np.ndarray:
     """
-    Calculate density matrix for a given som:
+    Calculate density matrix for a given som weight cube and dataset.
 
-    weight_cube: SOM weight cube
-    u_matrix:    output from calculate_u_matrix
-    dataset:     Data in the form given to the SOM for training
+    **This function is not working as intended, need to review it**
+    It is not acutally using the information of the u_matrix
+
+    Parameters
+    ----------
+
+    weight_cube : np.ndarray
+        SOM weight cube
+    u_matrix : np.ndarray
+        output from calculate_u_matrix
+    dataset:    
+        Data in the same form given to the SOM as input for training
+
+    Returns
+    -------
+    density_matrix : np.ndarray
+        The density matrix for the given dataset
     """
     x, y = u_matrix.shape
     density_matrix = np.zeros((x, y))
@@ -102,22 +149,40 @@ def calculate_density_matrix(weight_cube, u_matrix, dataset):
 
     return density_matrix
 
-def display_density_matrix(density_matrix):
+def display_density_matrix(density_matrix: np.ndarray):
+    """
+    Display the density matrix as an image.
+
+    Parameters
+    ----------
+    density_matrix : np.ndarray
+        The density matrix to display
+    """
     import matplotlib.pyplot as plt
     plt.imshow(density_matrix, cmap='viridis')
     plt.colorbar()
     plt.title('Density Matrix')
     plt.show()
     
-def rise_time_vs_area_SOM_clusters(data, colors, n_rows, n_cols):
+def rise_time_vs_area_SOM_clusters(data: np.ndarray, colors: Union[list, np.ndarray], 
+                                   n_rows: int, n_cols: int):
     """
-    takes in the data from peaklet level data using the SOM classification
+    Plots the rise time vs area for each cluster in the SOM.
+
+    Takes in the data from peaklet level data using the SOM classification
     and outputs a grid of plots showing each cluster.
+
+    Parameters
+    ----------
     
-    data:     strudtured array with XENONnT data of data type peaks or peaklet
-    colors:   list of colors used by the SOM
-    n_rows:   number of coulmns in grid with the plots 
-    n_cols:   number of rows in grid with the plots 
+    data : np.ndarray     
+        strudtured array with XENONnT data of data type peaks or peaklet
+    colors : list or np.ndarray   
+        list of colors used by the SOM
+    n_rows:   
+        number of coulmns in grid with the plots 
+    n_cols:   
+        number of rows in grid with the plots 
     """
     fig, ax = plt.subplots(nrows=n_rows, ncols=n_cols, figsize=(24, 18))
 
@@ -136,8 +201,15 @@ def rise_time_vs_area_SOM_clusters(data, colors, n_rows, n_cols):
             num = num + 1
 
 
-def nunr_file_to_list(nunr_file):
-    # make an object we can store everythin we want in
+def nunr_file_to_list(nunr_file: list):
+    """
+    Extracts the PE data from a nunr file and converts it into a list.
+
+    Parameters
+    ----------
+    nunr_file : list
+        Opened nunr file from NeuroScope, needs to be parced to extract the PE data
+    """
     obj = {}
     for i in range(1, len(nunr_file) + 1):
         obj[i] = []
