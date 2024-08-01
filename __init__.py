@@ -1,2 +1,2 @@
-from SOM_recall.SOM_functions import *
+from SOM_recall.recall import *
 from Plotting.SOM_plots import *
