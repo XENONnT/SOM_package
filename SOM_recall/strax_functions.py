@@ -1,10 +1,31 @@
 import strax
 import numba
+import numpy as np
 
 
-def data_to_log_decile_log_area_aft(peaklet_data, normalization_factor):
-    """Converts peaklet data into the current best inputs for the SOM, log10(deciles) + log10(area)
-    + AFT Since we are dealing with logs, anything less than 1 will be set to 1."""
+def data_to_log_decile_log_area_aft(peaklet_data: np.ndarray, 
+                                    normalization_factor: np.ndarray) -> np.ndarray:
+    """
+    Takes peakelt level data and converts it into input vectors for the SOM consisting of: deciles, log10(area), AFT
+    
+    Converts peaklet data into the current best inputs for the SOM, log10(deciles) + log10(area)
+    + AFT Since we are dealing with logs, anything less than 1 will be set to 1. 
+    Any decile value < 1 will be set to 1 before log10 is taken.
+    The areas can be very negative to we add the minimum value to all areas to make them positive.
+
+    Parameters
+    ----------
+    peaklet_data : np.ndarray
+        Peaklet level data
+    normalization_factor : np.ndarray
+        Normalization factors for the data
+    
+    Returns
+    -------
+    deciles_area_aft : np.ndarray
+        Normalized Input vectors for the SOM
+    
+    """
     # turn deciles into approriate 'normalized' format
     # (maybe also consider L1 normalization of these inputs)
     decile_data = compute_quantiles(peaklet_data, 10)
@@ -32,10 +53,20 @@ def data_to_log_decile_log_area_aft(peaklet_data, normalization_factor):
     return deciles_area_aft
 
 def compute_quantiles(peaks: np.ndarray, n_samples: int):
-    """Compute waveforms and quantiles for a given number of nodes(attributes) :param peaks:
+    """
+    Compute waveforms and quantiles for a given number of nodes(attributes)
 
-    :param n_samples: number of nodes or attributes
-    :return: quantiles
+    Parameters
+    ----------
+    peaks : np.ndarray
+        Peaks data
+    n_samples : int
+        Number of nodes or attributes
+
+    Returns
+    -------
+    quantiles : np.ndarray
+        Quantiles of the waveform
 
     """
 
@@ -50,14 +81,25 @@ def compute_quantiles(peaks: np.ndarray, n_samples: int):
 @numba.jit(nopython=True, cache=True)
 def compute_wf_attributes(data, sample_length, n_samples: int):
     """
-    Compute waveform attribures
+    Compute waveform attribures.
+
     Quantiles: represent the amount of time elapsed for
     a given fraction of the total waveform area to be observed in n_samples
-    i.e. n_samples = 10, then quantiles are equivalent deciles
-    Waveforms: downsampled waveform to n_samples
-    :param data: waveform e.g. peaks or peaklets
-    :param n_samples: compute quantiles for a given number of samples
-    :return: waveforms and quantiles of size n_samples
+    i.e. n_samples = 10, then quantiles are equivalent deciles.
+
+    Parameters
+    ----------
+    data : np.ndarray
+        Waveform data
+    sample_length : np.ndarray
+        Length of each sample
+    n_samples : int
+        Number of samples
+
+    Returns
+    -------
+    quantiles : np.ndarray
+        Quantiles of the waveform
     """
 
     assert data.shape[0] == len(sample_length), "ararys must have same size"

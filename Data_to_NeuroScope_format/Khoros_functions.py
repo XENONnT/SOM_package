@@ -5,10 +5,14 @@ def save_khoros_raw(file_name: str, data: np.ndarray):
     """
     Saves a given data into the desired raw data file so I can use 
     it to train an SOM in NeuroScope.
+
+    Parameters
+    ----------
     
-    file_name:    Path to where you want to save the file + file name
-    data:         Data for the weightcube to use in neuroscope
-    
+    file_name : str
+        Path to where you want to save the file + file name
+    data : np.ndarray
+        Data for the weightcube to use in neuroscope
     """
     import viff
     
@@ -22,26 +26,20 @@ def import_khoros_weightcube(path_to_weights: str):
     """
     Imports a weightcube generated with the khoros system,
     reshapes it into the appropriate format and applies an
-    affine transform for recalls
+    affine transform for recalls.
 
-    path_to_weights: path to where the som weight is located
+    Parameters
+    ----------
+
+    path_to_weights : str
+        path to where the som weight is located
+
+    Returns
+    -------
+    weight_cube : np.ndarray
+        The weight cube for the SOM, reshaped to be handled in python
     """
     import viff
-    
-    wgtcub = viff.read(path_to_weights)
-    [_, zdim, xdim, ydim] = wgtcub.shape
-    wgtcub_re = np.reshape(wgtcub, [zdim, xdim, ydim])
-    wgtcub_tr = np.transpose(wgtcub_re, [1,2,0])
-    weight_cube = affine_transform(wgtcub_tr, -1,1,0,1)
-    return weight_cube
-
-def import_khoros_weightcube(path_to_weights: str):
-    """
-    Imports a weightcube generated with the khoros system,
-    reshapes it into the appropriate format and applies an
-    affine transform for recalls
-    
-    """
     
     wgtcub = viff.read(path_to_weights)
     [_, zdim, xdim, ydim] = wgtcub.shape
@@ -54,8 +52,13 @@ def data_to_raw_file_4_khoros(data: np.ndarray, file: str):
     """
     Make data file into an appropriate raw file for khoros format
     
-    data:    3D data cube
-    file:    path location + filename of desired output file
+    Parameters
+    ----------
+    
+    data : np.ndarray
+        3D data cube
+    file : str
+        path location + filename of desired output file
     """
     data_t = np.transpose(data, [2,0,1])
     np.asfortranarray(data_t.astype('float64')).tofile(file)

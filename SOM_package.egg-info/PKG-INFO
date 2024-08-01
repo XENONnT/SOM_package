@@ -1,10 +1,7 @@
-Metadata-Version: 1.0
-Name: SOM-package
+Metadata-Version: 2.1
+Name: SOM_package
 Version: 0.1
-Summary: UNKNOWN
-Home-page: UNKNOWN
-Author: UNKNOWN
-Author-email: UNKNOWN
-License: UNKNOWN
-Description: UNKNOWN
-Platform: UNKNOWN
+Requires-Dist: viffIO>=0.0.1
+Requires-Dist: numpy>=1.22.4
+Requires-Dist: strax>=1.5.2
+Requires-Dist: matplotlib>=3.7.1
