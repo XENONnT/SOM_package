@@ -1,6 +1,7 @@
 import viff
+import numpy as np
 
-def save_khoros_raw(file_name, data):
+def save_khoros_raw(file_name: str, data: np.ndarray):
     """
     Saves a given data into the desired raw data file so I can use 
     it to train an SOM in NeuroScope.
@@ -17,7 +18,7 @@ def save_khoros_raw(file_name, data):
     assert '.raw' in file_name, "The output file must be a raw file!"
     viff.write(file_name, save_khoros_raw_c)
 
-def import_khoros_weightcube(path_to_weights):
+def import_khoros_weightcube(path_to_weights: str):
     """
     Imports a weightcube generated with the khoros system,
     reshapes it into the appropriate format and applies an
@@ -34,7 +35,7 @@ def import_khoros_weightcube(path_to_weights):
     weight_cube = affine_transform(wgtcub_tr, -1,1,0,1)
     return weight_cube
 
-def import_khoros_weightcube(path_to_weights):
+def import_khoros_weightcube(path_to_weights: str):
     """
     Imports a weightcube generated with the khoros system,
     reshapes it into the appropriate format and applies an
@@ -49,7 +50,7 @@ def import_khoros_weightcube(path_to_weights):
     weight_cube = affine_transform(wgtcub_tr, -1,1,0,1)
     return weight_cube
 
-def data_to_raw_file_4_khoros(data, file: str):
+def data_to_raw_file_4_khoros(data: np.ndarray, file: str):
     """
     Make data file into an appropriate raw file for khoros format
     
