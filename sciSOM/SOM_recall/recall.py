@@ -4,7 +4,6 @@ from typing import Any, Union, Dict
 from scipy.spatial.distance import cdist
 import numpy.lib.recfunctions as rfn
 import strax
-import straxen
 import viff
 
 # Lets organize this a bit better
