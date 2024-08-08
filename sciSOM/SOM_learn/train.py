@@ -19,6 +19,7 @@ class SOM:
                  n_iter: int, 
                  learning_parameters: np.ndarray, 
                  decay_type: str = "functional", 
+                 neighborhood_decay: str = "geometric_series",
                  som_type: str="Kohonen", 
                  mode: str="batch"):
         """
@@ -54,6 +55,7 @@ class SOM:
         self.decay_type = decay_type
         self.som_type = som_type
         self.mode = mode
+        self.neighborhood_decay = neighborhood_decay
         self.weight_cube = np.random.rand(x_dim, y_dim, input_dim)
 
         self.mode_methods = {
@@ -63,6 +65,10 @@ class SOM:
         
         if mode not in self.mode_methods:
             raise ValueError(f"Mode {mode} is not supported. Choose from {list(self.mode_methods.keys())}")
+        
+        # Check if the learning parameters are correct
+        self.learning_rate_history = np.zeros(n_iter)
+        self.learning_radius_history = np.zeros(n_iter)
 
 
     def train(self, data):
@@ -79,7 +85,7 @@ class SOM:
         train_method = self.mode_methods.get(self.mode)
        
         # Maybe output an array with random indexes to train the SOM?
-        data_shuffled_index = train_method(data, self.n_iter)
+        data_shuffled_index = train_method(data)
 
         # Train the SOM
         if self.som_type == "Kohonen":
@@ -101,12 +107,17 @@ class SOM:
         # This might be a bit unnecessary but I will keep it for now.
         [som_x, som_y, _] = self.weight_cube.shape
 
+        # Records parameters to confirm SOM is training correctly
+        alpha_rec = np.zeros(self.n_iter)
+        sigma_rec = np.zeros(self.n_iter)
+        radius_rec = np.zeros(self.n_iter)
+
         # Might want to pick a mode outside the loop to save time.
 
         for i in range(self.n_iter):
             distances = cdist(self.weight_cube.reshape(-1, 
                                                        self.weight_cube.shape[-1]), 
-                                                       data[indecies[i]], 
+                                                       data[int(indecies[i])].reshape(1,self.input_dim), 
                                                        metric='euclidean')
 
             w_neuron = np.argmin(distances, axis=0)
@@ -115,31 +126,48 @@ class SOM:
             # Need to calculate the sigma radius.
             # Might want to write this in a more modular way.
             if self.decay_type == "exponential":
-                sigma = int(self.learning_parameters["sigma"] * np.exp(-i / self.n_iter))
-                radius = math.ceil(self.learning_parameters["max_radius"] * np.exp(-i / self.n_iter))
+                tao = self.n_iter / self.learning_parameters["max_radius"]
+                sigma = int(self.learning_parameters["sigma"] * np.exp(-i / tao))
+                alpha = self.learning_parameters["alpha"] * np.exp(-i / tao)
+                radius = math.ceil(self.learning_parameters["max_radius"] * np.exp(-i / tao))
             
             elif self.decay_type == "linear":
+                #tao = self.n_iter / self.learning_parameters["max_radius"]
                 sigma = int(self.learning_parameters["sigma"] - self.learning_parameters["sigma"] / self.n_iter * i)
+                alpha = self.learning_parameters["alpha"] - self.learning_parameters["alpha"] / self.n_iter * i
                 radius = math.ceil(self.learning_parameters["max_radius"] - self.learning_parameters["max_radius"] / self.n_iter * i)
            
             elif self.decay_type == "schedule":
                 # Need to check if the current time step is and pic the sigma from the schedule.
                 current_schedule = np.sum(self.learning_parameters["time"] <= i)
                 sigma = self.learning_parameters["sigma"][current_schedule]
+                alpha = self.learning_parameters["alpha"][current_schedule] 
                 radius = self.learning_parameters["max_radius"][current_schedule]  
 
             else:
                 raise ValueError(f"Decay type {self.decay_type} is not supported. Choose from exponential, linear or schedule")
 
             # Now compute the neighbors to update
-            x_min, x_max, y_min, y_max = self.compute_neighborhood(x_idx, y_idx, sigma, radius)
+            x_min, x_max, y_min, y_max = self.compute_neighborhood(x_idx, 
+                                                                   y_idx, 
+                                                                   sigma, 
+                                                                   radius)
 
-            neighborhood_radius = self.neighborhood_function(x_idx, y_idx, radius)
+            neighborhood_radius = self.neighborhood_function(int(x_idx), 
+                                                             int(y_idx), 
+                                                             sigma, 
+                                                             radius)
+            
+            self.learning_rate_history[i] = alpha
+            self.learning_radius_history[i] = radius
 
             # This is currently updating the BMU, but we need to update the BMU and its neighbors.
             # Missing the radius decay. (further away points should be updated less)
-            self.weight_cube[x_min:x_max, y_min:y_max] += self.learning_parameters["alpha"] * neighborhood_radius[x_min:x_max, y_min:y_max] * (data[indecies[i]] - self.weight_cube[x_min:x_max, y_min:y_max])
-        
+            self.weight_cube[x_min:x_max, y_min:y_max] += (
+                alpha 
+                * neighborhood_radius[x_min:x_max, y_min:y_max, np.newaxis] 
+                * (data[int(indecies[i])] - self.weight_cube[x_min:x_max, y_min:y_max]))
+            
     
     def cSOM(self, index):
         """
@@ -147,22 +175,32 @@ class SOM:
         """
         raise NotImplementedError
     
-    def neighborhood_function(self, x_bmu, y_bmu, radius):
+    def neighborhood_function(self, x_bmu, y_bmu, sigma, radius):
         """
         Calculate the neighborhood function for the SOM. This function should
         decay with the distance from the BMU.
         """
-        x_min, x_max, y_min, y_max = self.compute_neighborhood(x_bmu, y_bmu, radius)
+        x_min, x_max, y_min, y_max = self.compute_neighborhood(x_bmu, y_bmu, sigma, radius)
         update_neighborhood = np.zeros((self.x_dim, self.y_dim))
 
         # Simple neighborhood function
         #-=]\update_neighborhood[x_min:x_max, y_min:y_max] = 1 
 
         # Could maybe speed up with numba
-        for i in range(x_min, x_max):
-            for j in range(y_min, y_max):
+        # Make tests to ensure BMU is ser to 1 and decays with distance
+        if self.neighborhood_decay == "geometric_series":
+            for i in range(x_min, x_max):
+                for j in range(y_min, y_max):
 
-                update_neighborhood[i, j] = 1 / 2 ** (np.max((np.abs(x_bmu - i)), np.abs(y_bmu - j) ))#np.exp(-np.linalg.norm([i-x_bmu, j-y_bmu]) / sigma)
+                    update_neighborhood[i, j] = 1 / 2 ** (max((np.abs(x_bmu - i)), np.abs(y_bmu - j) )) #np.exp(-np.linalg.norm([i-x_bmu, j-y_bmu]) / sigma)
+
+        elif self.neighborhood_decay == "exponential":
+            for i in range(x_min, x_max):
+                for j in range(y_min, y_max):
+                    update_neighborhood[i, j] = np.exp(-np.linalg.norm([i-x_bmu, j-y_bmu]) ** 2 / (2 * radius ** 2))
+
+        elif self.neighborhood_decay == "none":
+            update_neighborhood[x_min:x_max:, y_min: y_max] = 1
 
         return update_neighborhood
         # Want to make it so the value is 1 at the BMU and decays with distance.
@@ -177,11 +215,12 @@ class SOM:
         y_min = max(0, y_bmu - radius)  
         y_max = min(self.y_dim, y_bmu + radius)
 
-        return x_min, x_max, y_min, y_max
+        return int(x_min), int(x_max), int(y_min), int(y_max)
 
     def decay(self):
         """
         Decides how the learning rate and other parameters will decrease over time
+        ** Not in use yet **
         """
         if self.decay_type == "exponential":
             self.learning_rate = self.learning_rate * np.exp(-i / self.n_iter)
@@ -193,6 +232,8 @@ class SOM:
 
         elif self.decay_type == "schedule":
             self
+
+        raise NotImplementedError
 
     def _train_batch(self, data):
         """
@@ -207,16 +248,16 @@ class SOM:
         for batch in range(batches):
             if batch != batches - 1:
                 indecies[batch*len(data): (1 + batch)*len(data)] = random.sample(list(np.arange(len(data))), len(data))
-            else:
+            elif reminder != 0:
                 indecies[(batch)*len(data):] = random.sample(list(np.arange(len(data))), reminder)
                 
         return indecies
 
-    def _train_online(self, data, n_iter):
+    def _train_online(self, data):
         """
         Train the SOM in online mode.
         """
-        return random.choices(np.arange(len(data)), k=n_iter) 
+        return random.choices(np.arange(len(data)), k=self.n_iter) 
     
     def weight_cube(self):
         """
