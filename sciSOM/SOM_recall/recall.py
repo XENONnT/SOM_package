@@ -69,22 +69,22 @@ def assign_labels(data: np.ndarray,
     return colorp, data_new
 
 
-def affine_transform(data: np.ndarray, data_min: float, data_max: float, target_min: float, target_max: float) -> np.ndarray:
+def affine_transform(data: np.ndarray, 
+                     target_min: Union[float, np.ndarray], 
+                     target_max: Union[float, np.ndarray]) -> np.ndarray:
     """
-    Takes a set of data an applies a affine transfrom to scale it.
+    Takes a set of data an applies a affine transfrom to scale it. 
+    The first axis is expected to be the number of data samples, the second
+    axis is expected to be the number of features.
 
     Parameters
     ----------
 
     data : np.ndarray
         Input data to apply the affine transform to.
-    data_min : float
-        Minimum of your data set
-    data_max : float
-        Maximum of the data set
-    target_min : float
+    target_min : float or np.ndarray
         Minimum of the target space
-    target_max : float
+    target_max : float or np.ndarray
         Maximum of the target space
 
     Returns
@@ -92,6 +92,15 @@ def affine_transform(data: np.ndarray, data_min: float, data_max: float, target_
     normalized_data : np.ndarray
         Data after the affine transformation
     """
+    _, dim = np.shape(data)
+    data_min = np.min(data, axis = 0)
+    data_max = np.max(data, axis = 0)  
+
+    if np.isscalar(target_min):
+        target_min = np.repeat(target_min, dim)
+    if np.isscalar(target_max):
+        target_max = np.repeat(target_max, dim) 
+
     normalized_data = ((data - data_min)/(data_max-data_min))*(target_max-target_min) + target_min
     return normalized_data
     
