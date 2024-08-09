@@ -84,6 +84,7 @@ def test_SOM_init(learn_parm):
     assert som_model.learning_parameters['alpha'] == learn_parm['alpha']
     assert som_model.learning_parameters['sigma'] == learn_parm['sigma']
     assert som_model.learning_parameters['max_radius'] == learn_parm['max_radius']
+    assert som_model.is_trained == False
 
 #@given(data=multiple_consistent_arrays_strategy(dtype=np.float64, shape_strategy=consistent_shape_strategy))
 @given(shape=consistent_shape_strategy,
@@ -91,7 +92,7 @@ def test_SOM_init(learn_parm):
        data=multiple_consistent_arrays_strategy(dtype=np.float64, shape_strategy=consistent_shape_strategy))
 def test_SOM_kohonen_defualt(shape, params, data):
     _,dim =np.shape(data)
-    som_model = SOM(x_dim = 5, y_dim = 5, input_dim = dim, n_iter = 1000, 
+    som_model = SOM(x_dim = 5, y_dim = 5, input_dim = dim, n_iter = 100, 
                     learning_parameters=params,
                     )
     
@@ -101,16 +102,45 @@ def test_SOM_kohonen_defualt(shape, params, data):
     assert som_model.is_trained == True
     assert is_monotonically_decreasing(som_model.learning_rate_history) == True
     assert is_monotonically_decreasing(som_model.learning_radius_history) == True
+    assert np.all(som_model.learning_rate_history > 0)
+    assert np.all(som_model.learning_radius_history > 0)
 
 
-#@given(st.lists(array_strategy, min_size=2, max_size=100))
-def pause_test_SOM_kohonen_decay_modes(arrays):
-    array_normalized = affine_transform(arrays, target_min = 0, target_max = 1)
-    som_model = SOM(5, 5, 5, n_iter = 1000, 
-                    learning_parameters=learning_parameters_decay,
-                    decay_mode = 'linear'
+# also give multiple possible neighborhood functions
+@given(params=param_strategy())
+def test_neighborhood_function(params):
+    som = SOM(x_dim=5, y_dim=5, input_dim=3, n_iter=100, learning_parameters=params)
+    x_bmu, y_bmu = 2, 2
+    radius = params['max_radius'][0]
+    sigma = params['sigma'][0]
+    
+    neighborhood = som.neighborhood_function(x_bmu, y_bmu, sigma, radius)
+    assert neighborhood[x_bmu, y_bmu] == 1
+    assert np.all(neighborhood >= 0)
+
+@given(x_bmu=st.integers(min_value=0, max_value=4),
+       y_bmu=st.integers(min_value=0, max_value=4),
+       sigma=st.floats(min_value=0.0, max_value=1.0),
+       radius=st.integers(min_value=1, max_value=5))
+def test_compute_neighborhood(x_bmu, y_bmu, sigma, radius):
+    som = SOM(x_dim=5, y_dim=5, input_dim=3, n_iter=100, learning_parameters=learning_parameters_decay)
+    
+    xmin, xmax, ymin, ymax = som.compute_neighborhood(x_bmu, y_bmu, sigma, radius)
+    assert (np.array([xmin, xmax, ymin, ymax]) >= 0).all()
+    assert (np.array([xmin, xmax, ymin, ymax]) <= 4).all()
+    assert (xmin <= xmax) and (ymin <= ymax)    
+
+@given(shape=consistent_shape_strategy,
+       params=param_strategy(),
+       data=multiple_consistent_arrays_strategy(dtype=np.float64, shape_strategy=consistent_shape_strategy))
+def test_SOM_kohonen_decay_modes(shape, params, data):
+    #array_normalized = affine_transform(data, target_min = 0, target_max = 1)
+    _,dim =np.shape(data)
+    som_model = SOM(5, 5, dim, n_iter = 100, 
+                    learning_parameters=params,
+                    decay_type = 'linear'
                     )
-    som_model.train(array_normalized)
+    som_model.train(data)
     assert som_model.is_trained == True
 
 
