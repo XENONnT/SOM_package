@@ -93,14 +93,17 @@ def affine_transform(data: np.ndarray,
         Data after the affine transformation
     """
     _, dim = np.shape(data)
-    data_min = np.min(data, axis = 0)
-    data_max = np.max(data, axis = 0)  
+    data_min = np.min(data, axis = 1, keepdims = True)
+    data_max = np.max(data, axis = 1, keepdims = True)  
 
     if np.isscalar(target_min):
-        target_min = np.repeat(target_min, dim)
+        target_min = np.full(dim, target_min)
     if np.isscalar(target_max):
-        target_max = np.repeat(target_max, dim) 
+        target_max = np.full(dim, target_max) 
 
+    if (data_max == data_min).any():
+        raise ZeroDivisionError('Data has no variance')
+    
     normalized_data = ((data - data_min)/(data_max-data_min))*(target_max-target_min) + target_min
     return normalized_data
     
@@ -131,8 +134,8 @@ def select_middle_pixel(img_as_np_array: np.ndarray,
     #img_flipped = np.flip(img_as_np_array, 0) # image indexing start at the top and go down
                                               # this fixes this issue.
     img_flipped = img_as_np_array
-    SOM_width = int(width/12)
-    SOM_height = int(height/12)
+    SOM_width = int(width/pxl_per_block)
+    SOM_height = int(height/pxl_per_block)
     
     SOM_img_clusters = np.zeros([SOM_width, SOM_height, depth])
     

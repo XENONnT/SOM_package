@@ -18,7 +18,7 @@ class SOM:
                  input_dim: int, 
                  n_iter: int, 
                  learning_parameters: np.ndarray, 
-                 decay_type: str = "functional", 
+                 decay_type: str = "exponential", 
                  neighborhood_decay: str = "geometric_series",
                  som_type: str="Kohonen", 
                  mode: str="batch"):
@@ -57,6 +57,7 @@ class SOM:
         self.mode = mode
         self.neighborhood_decay = neighborhood_decay
         self.weight_cube = np.random.rand(x_dim, y_dim, input_dim)
+        self.is_trained = False
 
         self.mode_methods = {
             'batch': self._train_batch,
@@ -97,7 +98,7 @@ class SOM:
         else:
             raise ValueError(f"SOM type {self.som_type} is not supported. Choose from Kohonen or cSOM")
 
-        #return weight_cube
+        self.is_trained = True
 
     def Kohonen_SOM(self, data, indecies):
         """
