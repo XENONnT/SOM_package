@@ -212,9 +212,9 @@ class SOM:
         Compute the neighborhood of the BMU.
         """
         x_min = max(0, x_bmu - radius)  
-        x_max = min(self.x_dim, x_bmu + radius)  
+        x_max = min(self.x_dim -1, x_bmu + radius)  
         y_min = max(0, y_bmu - radius)  
-        y_max = min(self.y_dim, y_bmu + radius)
+        y_max = min(self.y_dim -1, y_bmu + radius)
 
         return int(x_min), int(x_max), int(y_min), int(y_max)
 
