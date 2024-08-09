@@ -8,7 +8,10 @@ version = "0.0.0"
 decription = "SOM software for scientists"
 dependencies = [
     'viffIO>=0.0.1',
-    'numpy>=1.22.4',
+    'numpy>=2.0.1',
+    'pandas>=2.2.2',
     'strax>=1.5.2',
-    'matplotlib>=3.7.1'
+    'matplotlib>=3.7.1',
+    'pytest>=8.3.0',
+    'hypothesis>=6.100.0'
 ]
