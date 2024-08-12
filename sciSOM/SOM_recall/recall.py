@@ -93,13 +93,13 @@ def affine_transform(data: np.ndarray,
         Data after the affine transformation
     """
     _, dim = np.shape(data)
-    data_min = np.min(data, axis = 1, keepdims = True)
-    data_max = np.max(data, axis = 1, keepdims = True)  
+    data_min = np.min(data, axis = 0)
+    data_max = np.max(data, axis = 0)  
 
     if np.isscalar(target_min):
-        target_min = np.full(dim, target_min)
+        target_min = np.repeat(target_min, dim)
     if np.isscalar(target_max):
-        target_max = np.full(dim, target_max) 
+        target_max = np.repeat(target_max, dim) 
 
     if (data_max == data_min).any():
         raise ZeroDivisionError('Data has no variance')
