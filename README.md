@@ -1,3 +1,4 @@
+<!-- SPHINX-START -->
 # SOM_package
 
 The package allows users to train a Self-Organizing Map (SOM) and use it for data analysis.
