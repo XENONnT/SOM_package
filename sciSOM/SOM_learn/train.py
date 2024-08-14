@@ -4,8 +4,9 @@ import math
 import random # Might want to take a closer look at radom number generators in the futuer
 
 class SOM:
-    __doc__ = """
+    """
     SOM class:
+
     SOM object that can be trained and used to classify data.
     One of the goals of this object will be to switch between different
     SOM implementations. For now, it will be a simple implementation and the 
@@ -27,28 +28,48 @@ class SOM:
         """
         Initialize the SOM object.
 
-        Parameters:
-        x_dim (int): The x dimension of the SOM.
-        y_dim (int): The y dimension of the SOM.
-        input_dim (int): The dimension of the input data.
-        n_iter (int): The number of iterations to train the SOM.
-
-        learning_parameters (structured array): 
-        for Khononen SOM -> The learning rate and sigma for the SOM.
-        for a cSOM -> The learning rate, beta, and gamma of the SOM.
-        (The main difference between this paper and our implementation
-        is that we also update the immidiate neighbors of the BMU)
-        https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=23839
-        ** Could maybe make it more general in the future so it can accept tables**
-
-        decay_type (str): The type of decay the SOM should follow.
+        Parameters
+        ----------
+        x_dim : (int) 
+            The x dimension of the SOM.
+        y_dim : (int) 
+            The y dimension of the SOM.
+        input_dim : (int) 
+            The dimension of the input data.
+        n_iter : (int) 
+            The number of iterations to train the SOM.
+        learning_parameters : (ndarray)
+            for Khononen SOM -> The learning rate and sigma for the SOM.
+            for a cSOM -> The learning rate, beta, and gamma of the SOM.
+            (The main difference between this paper and our implementation
+            is that we also update the immidiate neighbors of the BMU)
+            https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=23839
+            ** Could maybe make it more general in the future so it can accept tables**
+        decay_type : (str) 
+            The type of decay the SOM should follow.
+            Default is set to exponential. Could be linear or schedule.
+        neighborhood_decay : (str)
+            The type of decay the neighborhood function should follow.
+            defualt is set to geometric_series. Could be exponential or none.
         som_type (str): The type of SOM to use. Current options are Kohonen or cSOM, 
                         this can be expanded.
-        mode (str): The mode of the SOM. Either batch or online.
-
-        learning_parameters['alpha'] (float): The learning rate of the SOM.
-        learning_parameters['sigma'] (float): The initial neighborhood radius of the SOM.
+        mode : (str) 
+            The mode of the SOM. 
+            default is set to batch. Could be online.
+        save_weight_cube_history : (bool)
+            Saves the history of how often each neuron was the BMU.
+            default is set to False.
+        gamma_off : (bool)
+            Turns off the gamma term in the cSOM algorithm. 
+            Effecively making it a Kohonen SOM with a constant neighborhood
+            size of 1.
+            default is set to False.
+        
+        Returns
+        -------
+        None
         """
+
         self.x_dim = x_dim
         self.y_dim = y_dim
         self.input_dim = input_dim

@@ -1,23 +1,46 @@
+# Configuration file for the Sphinx documentation builder.
+#
+# For the full list of built-in configuration values, see the documentation:
+# https://www.sphinx-doc.org/en/master/usage/configuration.html
 import importlib.metadata
+import os
+import sys
+sys.path.insert(0, os.path.abspath('..'))
+# -- Project information -----------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = "sciSOM"
-extensions = ["myst_parser"]
-author = "Luis A. Sanchez"
-source_suffix = [".rst", ".md"]
-version = release = importlib.metadata.version("sciSOM")
+project = 'sciSOM'
+copyright = '2024, Luis A. Sanchez'
+author = 'Luis A. Sanchez'
+try:
+    # Attempt to get the version from the installed package
+    version = release = importlib.metadata.version("sciSOM")
+except importlib.metadata.PackageNotFoundError:
+    # Fallback to import the local sciSOM module directly
+    try:
+        import sciSOM
+        version = release = getattr(sciSOM, '__version__', '0.0.0')
+    except ImportError:
+        # If that also fails, use a default version
+        version = release = '0.0.0'
 
-extensions = [
-    "myst_parser",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.autosummary",
-    "sphinx.ext.intersphinx",
-    "sphinx.ext.mathjax",
-    "sphinx.ext.napoleon",
-    "sphinx_autodoc_typehints",
-    "sphinx_copybutton",
-]
+# -- General configuration ---------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-source_suffix = [".rst", ".md"]
+extensions = ['myst_parser',
+              'sphinx.ext.autodoc', 
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.mathjax',
+              'sphinx.ext.napoleon',
+              'sphinx.ext.autosummary',
+              'sphinx_autodoc_typehints',
+              'sphinx_copybutton',]
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
+templates_path = ['_templates']
 exclude_patterns = [
     "_build",
     "**.ipynb_checkpoints",
@@ -27,7 +50,14 @@ exclude_patterns = [
     ".venv",
 ]
 
-html_theme = "furo"
+master_doc = 'index'
+pygments_style = 'sphinx'
+
+# -- Options for HTML output -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
+
+html_theme = 'furo'
+html_static_path = ['_static']
 
 myst_enable_extensions = [
     "colon_fence",
@@ -43,4 +73,4 @@ nitpick_ignore = [
 ]
 
 always_document_param_types = True
-
+autosummary_generate = True
