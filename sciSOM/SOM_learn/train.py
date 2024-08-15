@@ -99,6 +99,9 @@ class SOM:
         self.bais_matrix_history = np.zeros((x_dim, y_dim, n_iter))
         self.suppresion_matrix = np.zeros((x_dim, y_dim))
         self.suppresion_matrix_history = np.zeros((x_dim, y_dim, n_iter))
+        self.save_neighborhood_function = np.zeros((x_dim, y_dim, n_iter))
+        self.track_mbu = np.zeros((2, n_iter))
+        self.track_radius_limits = np.zeros((4, n_iter))
 
         if self.save_weight_cube_history:
             self.weight_cube_history = np.zeros((self.x_dim, self.y_dim))
@@ -137,9 +140,6 @@ class SOM:
         """
         Train the SOM using the Kohonen algorithm.
         """
-
-        # This might be a bit unnecessary but I will keep it for now.
-        [som_x, som_y, _] = self.weight_cube.shape
 
         # Records parameters to confirm SOM is training correctly
         alpha_rec = np.zeros(self.n_iter)
@@ -187,12 +187,11 @@ class SOM:
             # Now compute the neighbors to update
             x_min, x_max, y_min, y_max = self.compute_neighborhood(x_bmu, 
                                                                    y_bmu, 
-                                                                   sigma, 
                                                                    radius)
 
             neighborhood_radius = self.neighborhood_function(int(x_bmu), 
                                                              int(y_bmu), 
-                                                             sigma, 
+                                                             i, 
                                                              radius)
             
             self.learning_rate_history[i] = alpha
@@ -210,13 +209,17 @@ class SOM:
         """
         Train the SOM using the concious SOM algorithm.
         """
+        # Test in controlling the learning radius:
+        learning_radius = 1 # Leave this for SOM development, but should be set to 1 for cSOM
 
         for i in range(self.n_iter):
-            #x_bmu, y_bmu = self.compute_bmu(data, indecies, i)
+            # Calcualte initial BMU
             distances = cdist(self.weight_cube.reshape(-1, self.weight_cube.shape[-1]), 
                         data[int(indecies[i])].reshape(1,self.input_dim), 
                         metric='euclidean')
             
+            w_neuron = np.argmin(distances, axis=0)
+            x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
 
             # Conciouse mechanism
             alpha, beta, gamma = self.decay_cSOM(i)
@@ -226,33 +229,36 @@ class SOM:
             # Setting gamma to 0 as a test, should give cSOM -> Kohonen
             #gamma = 0
             # compute supressiong term
-            self.suppresion_matrix = gamma * ((1/(self.x_dim * self.y_dim)) - self.bais_matrix)
-
-            distances = (distances ** 2) - self.suppresion_matrix.reshape(self.suppresion_matrix.shape[0] * self.suppresion_matrix.shape[1], -1)  
-            w_neuron = np.argmin(distances, axis=0)
-            x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
 
             if self.save_weight_cube_history:
                 self.weight_cube_history[x_bmu, y_bmu] += 1
 
             self.bais_matrix[x_bmu, y_bmu] += beta * (1 - self.bais_matrix[x_bmu, y_bmu])
-            
+
+            self.suppresion_matrix = gamma * ((1/(self.x_dim * self.y_dim)) - self.bais_matrix)
+
+            distances = (distances ** 2) - self.suppresion_matrix.reshape(self.suppresion_matrix.shape[0] 
+                                                                          * self.suppresion_matrix.shape[1], -1)  
+            w_neuron = np.argmin(distances, axis=0)
+            x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
+
+
             self.bais_matrix_history[:, :, i] = self.bais_matrix
             self.suppresion_matrix_history[:, :, i] = self.suppresion_matrix
             self.learning_rate_history[i] = alpha
 
             # recalculate winning neuron
-            x_concious_bmu, y_concious_bmu = self.compute_bmu_cSOM(data, indecies, i, self.suppresion_matrix)
+            x_concious_bmu, y_concious_bmu = self.compute_bmu_cSOM(data, indecies, 
+                                                                   i, self.suppresion_matrix)
 
             x_min, x_max, y_min, y_max = self.compute_neighborhood(x_concious_bmu, 
                                                                    y_concious_bmu, 
-                                                                   None, 
-                                                                   1)
+                                                                   learning_radius)
             
             neighborhood_radius = self.neighborhood_function(int(x_concious_bmu), 
                                                              int(y_concious_bmu), 
-                                                             None, 
-                                                             1)
+                                                             i, 
+                                                             learning_radius)
             
             self.weight_cube[x_min:x_max, y_min:y_max] += (
                 alpha 
@@ -285,12 +291,17 @@ class SOM:
 
         return x_idx, y_idx
     
-    def neighborhood_function(self, x_bmu, y_bmu, sigma, radius):
+    def neighborhood_function(self, x_bmu, y_bmu, iter, radius):
         """
         Calculate the neighborhood function for the SOM. This function should
         decay with the distance from the BMU.
         """
-        x_min, x_max, y_min, y_max = self.compute_neighborhood(x_bmu, y_bmu, sigma, radius)
+        x_min, x_max, y_min, y_max = self.compute_neighborhood(x_bmu, y_bmu, radius)
+
+        # python ignores the last number in a range so we have to add 1
+        #x_max += 1
+        #y_max += 1
+        # Cant just add 1, breaks other things, just apply it to : in the array
         update_neighborhood = np.zeros((self.x_dim, self.y_dim))
 
         # Simple neighborhood function
@@ -312,18 +323,22 @@ class SOM:
         elif self.neighborhood_decay == "none":
             update_neighborhood[x_min:x_max:, y_min: y_max] = 1
 
+        self.save_neighborhood_function[:,:,iter] = update_neighborhood
+        self.track_mbu[:,iter] = [x_bmu, y_bmu]
+        self.track_radius_limits[:, iter] = [x_min, x_max, y_min, y_max]
+
         return update_neighborhood
         # Want to make it so the value is 1 at the BMU and decays with distance.
 
     
-    def compute_neighborhood(self, x_bmu, y_bmu, sigma, radius):
+    def compute_neighborhood(self, x_bmu, y_bmu, radius):
         """
         Compute the neighborhood of the BMU.
         """
         x_min = max(0, x_bmu - radius)  
-        x_max = min(self.x_dim, x_bmu + radius)  # removed -1 from self.x_dim never ran into error
+        x_max = min(self.x_dim, x_bmu + radius + 1)  # removed -1 from self.x_dim never ran into error
         y_min = max(0, y_bmu - radius)  
-        y_max = min(self.y_dim, y_bmu + radius)
+        y_max = min(self.y_dim, y_bmu + radius + 1)
 
         return int(x_min), int(x_max), int(y_min), int(y_max)
 
