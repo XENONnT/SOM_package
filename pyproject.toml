@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sciSOM"
-version = "0.0.0"
+version = "0.1.0"
 decription = "SOM software for scientists"
 dependencies = [
     'viffIO>=0.0.1',
