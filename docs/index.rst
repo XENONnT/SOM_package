@@ -30,6 +30,12 @@ documentation for details.
     tutorials/installation.md
     tutorials/first-steps.md
 
+.. toctree::
+   :maxdepth: 2
+   :caption: Example Notebooks
+
+   my_notebook.ipynb
+
 
 Indices and tables
 ==================

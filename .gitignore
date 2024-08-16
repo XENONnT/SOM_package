@@ -1,2 +1,5 @@
 .hypothesis/
 tests/.hypothesis/
+*.pyc
+__pycache__/
+

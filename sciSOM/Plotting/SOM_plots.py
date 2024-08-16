@@ -3,6 +3,37 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from typing import Union
 
+def plot_SOM_gird_neurons(weight_cube: np.ndarray) -> None:
+    """
+    This function take in a nunr file from NeuroScope and converts it into a useful format to us
+    Then it uses the data in the nunr file to identify which data samples belong to each PE
+    Finally it takes this data and plots it such that we can overlay any data we want.
+    
+    Parameters:
+    -------------------
+    weight_cube : np.ndarray
+        Weight cube after an SOM has been trained
+        
+    Returns:
+    ----------------
+    None
+        
+    """
+    
+    xgrid, ygrid, data_dim = np.shape(weight_cube)
+    
+    # Plotting section
+    fig, ax = plt.subplots(nrows=ygrid, ncols=xgrid, figsize=(5, 5))
+
+    a = 1
+    for i in np.arange(ygrid):
+        for j in np.arange(xgrid):
+            ax[j,i].plot(weight_cube[j,i,:])
+            ax[i,j].axis('off')
+            ax[i,j].set_xlim(0, data_dim)
+            ax[i,j].set_ylim(0, 1)
+            
+
 def SOM_gird_avg_wavefrom_per_cell(input_data: np.ndarray, 
                                    nunr_file_input: str, 
                                    grid_x_dim: int, 

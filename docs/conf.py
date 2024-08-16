@@ -28,10 +28,12 @@ except importlib.metadata.PackageNotFoundError:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['myst_parser',
+              'nbsphinx',
               'sphinx.ext.autodoc', 
               'sphinx.ext.intersphinx',
               'sphinx.ext.mathjax',
               'sphinx.ext.napoleon',
+              'sphinx.ext.viewcode',
               'sphinx.ext.autosummary',
               'sphinx_autodoc_typehints',
               'sphinx_copybutton',]
