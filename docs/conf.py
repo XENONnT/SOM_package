@@ -19,19 +19,21 @@ except importlib.metadata.PackageNotFoundError:
     # Fallback to import the local sciSOM module directly
     try:
         import sciSOM
-        version = release = getattr(sciSOM, '__version__', '0.0.0')
+        version = release = getattr(sciSOM, '__version__', '0.1.0')
     except ImportError:
         # If that also fails, use a default version
-        version = release = '0.0.0'
+        version = release = '0.1.0'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = ['myst_parser',
+              'nbsphinx',
               'sphinx.ext.autodoc', 
               'sphinx.ext.intersphinx',
               'sphinx.ext.mathjax',
               'sphinx.ext.napoleon',
+              'sphinx.ext.viewcode',
               'sphinx.ext.autosummary',
               'sphinx_autodoc_typehints',
               'sphinx_copybutton',]
