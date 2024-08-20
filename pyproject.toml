@@ -24,4 +24,6 @@ docs = [
   "sphinx-copybutton",
   "sphinx-autodoc-typehints",
   "nbsphinx"
+  "llvmlite>=0.37.0"
+  "ipykernel"
 ]
