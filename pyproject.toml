@@ -8,6 +8,7 @@ version = "0.1.0"
 decription = "SOM software for scientists"
 dependencies = [
     'viffIO>=0.0.1',
+    'numba>=0.54.0',
     'numpy>=2.0.1',
     'pandas>=2.2.2',
     'strax>=1.5.2',
