@@ -3,7 +3,7 @@
 In order to view some of the basics uses we recommend checkout out the notebook in examples/Kohonen_SOM.ipynb. Here we will provide a condenced version of what you should do!
 
 ```
-from sciSOM import *
+from sciSOM import SOM
 
 data = # Import your data here
 normalized_data = affine_transform(data, 0, 1)
