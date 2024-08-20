@@ -34,7 +34,7 @@ documentation for details.
    :maxdepth: 2
    :caption: Example Notebooks
 
-   my_notebook.ipynb
+   notebooks/Kohonen_SOM.ipynb
 
 
 Indices and tables
