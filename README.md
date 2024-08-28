@@ -17,6 +17,8 @@ This package is in development but for now, it has the basic tools we need to do
 - Useful visualization methods: Most of the jobs involved in training an SOM involves visualizing the data in many different ways and deciding where to draw the cluster boundaries, as such we will include many different visualization functions.
 - We need a way to draw the cluster boundaries easily, especially when training big SOMs so we will try to include tools to quickly draw cluster boundaries and generate images onto which we can draw cluster boundaries.
 
+To see the current documentation, please visit: https://scisom.readthedocs.io/en/latest/modules.html
+
 In the future, I intend to add functionality to train a SOM with a variety of choices and improve/expand upon the plotting functions that are currently available.
 
 This package is evolving/diverging for its current form, I will write here some of the implicit assumptions that I will be making as I build this code, these things might need to be revised and changed in the future:
