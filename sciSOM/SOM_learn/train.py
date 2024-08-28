@@ -24,7 +24,10 @@ class SOM:
                  som_type: str="Kohonen", 
                  mode: str="batch",
                  save_weight_cube_history: bool = False,
-                 gamma_off: bool = False):
+                 gamma_off: bool = False,
+                 weight_cube: np.ndarray = None,
+                 weight_cube_save_states: np.ndarray = None,
+                 csom_learning_radius = 1):
         """
         Initialize the SOM object.
 
@@ -79,10 +82,16 @@ class SOM:
         self.som_type = som_type
         self.mode = mode
         self.neighborhood_decay = neighborhood_decay
-        self.weight_cube = np.random.rand(x_dim, y_dim, input_dim)
         self.is_trained = False
         self.save_weight_cube_history = save_weight_cube_history
         self.gamma_off = gamma_off
+        self.csom_learning_radius = csom_learning_radius
+        self.weight_cube_save_states = weight_cube_save_states
+
+        if weight_cube is None:
+            self.weight_cube = np.random.rand(x_dim, y_dim, input_dim)
+        else:
+            self.weight_cube = weight_cube
 
         self.mode_methods = {
             'batch': self._train_batch,
@@ -102,6 +111,11 @@ class SOM:
         self.save_neighborhood_function = np.zeros((x_dim, y_dim, n_iter))
         self.track_mbu = np.zeros((2, n_iter))
         self.track_radius_limits = np.zeros((4, n_iter))
+
+        if weight_cube_save_states is not None:
+            self.som_save_state = np.zeros(((len(weight_cube_save_states)),
+                                            x_dim, y_dim, input_dim))
+            #self.weight_cube.copy()
 
         if self.save_weight_cube_history:
             self.weight_cube_history = np.zeros((self.x_dim, self.y_dim))
@@ -145,17 +159,19 @@ class SOM:
         alpha_rec = np.zeros(self.n_iter)
         sigma_rec = np.zeros(self.n_iter)
         radius_rec = np.zeros(self.n_iter)
+        counter = 0
 
         # Might want to pick a mode outside the loop to save time.
 
         for i in range(self.n_iter):
-            distances = cdist(self.weight_cube.reshape(-1, 
-                                                       self.weight_cube.shape[-1]), 
-                                                       data[int(indecies[i])].reshape(1,self.input_dim), 
-                                                       metric='euclidean')
+            #distances = cdist(self.weight_cube.reshape(-1, 
+            #                                           self.weight_cube.shape[-1]), 
+            #                                           data[int(indecies[i])].reshape(1,self.input_dim), 
+            #                                           metric='euclidean')
 
-            w_neuron = np.argmin(distances, axis=0)
-            x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
+            #w_neuron = np.argmin(distances, axis=0)
+            #x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
+            x_bmu, y_bmu = self.compute_bmu(data, indecies, i)
 
             if self.save_weight_cube_history:
                 self.weight_cube_history[x_bmu, y_bmu] += 1
@@ -204,13 +220,20 @@ class SOM:
                 * neighborhood_radius[x_min:x_max, y_min:y_max, np.newaxis] 
                 * (data[int(indecies[i])] - self.weight_cube[x_min:x_max, y_min:y_max]))
             
+            # Make this into a function later on to reduce code duplication
+            if self.weight_cube_save_states is not None:
+                if i == self.weight_cube_save_states[counter]:
+                    self.som_save_state[counter,:,:,:] = self.weight_cube.copy()
+                    counter += 1
+            
     
     def cSOM(self, data, indecies):
         """
         Train the SOM using the concious SOM algorithm.
         """
         # Test in controlling the learning radius:
-        learning_radius = 1 # Leave this for SOM development, but should be set to 1 for cSOM
+        learning_radius = self.csom_learning_radius # Leave this for SOM development, but should be set to 1 for cSOM
+        counter = 0
 
         for i in range(self.n_iter):
             # Calcualte initial BMU
@@ -237,15 +260,16 @@ class SOM:
 
             self.suppresion_matrix = gamma * ((1/(self.x_dim * self.y_dim)) - self.bais_matrix)
 
-            distances = (distances ** 2) - self.suppresion_matrix.reshape(self.suppresion_matrix.shape[0] 
-                                                                          * self.suppresion_matrix.shape[1], -1)  
-            w_neuron = np.argmin(distances, axis=0)
-            x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
+            #distances = (distances ** 2) - self.suppresion_matrix.reshape(self.suppresion_matrix.shape[0] 
+            #                                                              * self.suppresion_matrix.shape[1], -1)  
+            #w_neuron = np.argmin(distances, axis=0)
+            #x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
 
 
             self.bais_matrix_history[:, :, i] = self.bais_matrix
             self.suppresion_matrix_history[:, :, i] = self.suppresion_matrix
             self.learning_rate_history[i] = alpha
+            self.learning_radius_history[i] = learning_radius
 
             # recalculate winning neuron
             x_concious_bmu, y_concious_bmu = self.compute_bmu_cSOM(data, indecies, 
@@ -264,6 +288,12 @@ class SOM:
                 alpha 
                 * neighborhood_radius[x_min:x_max, y_min:y_max, np.newaxis] 
                 * (data[int(indecies[i])] - self.weight_cube[x_min:x_max, y_min:y_max]))
+            
+            # Make this into a function later on to reduce code duplication
+            if self.weight_cube_save_states is not None:
+                if i == self.weight_cube_save_states[counter]:
+                    self.som_save_state[counter,:,:,:] = self.weight_cube.copy()
+                    counter += 1
     
     def compute_bmu(self, data, indecies, iteration):
         distances = cdist(self.weight_cube.reshape(-1, self.weight_cube.shape[-1]), 
@@ -283,7 +313,7 @@ class SOM:
         # When plotting it looks like the suppresion matrix becomes negative
         # which does the opposite of baising the BMU. I will try to make it 
         # positive to see what happens. 
-        distances = distances + suppession_matrix.reshape(suppession_matrix.shape[0] * suppession_matrix.shape[1], -1)  
+        distances = (distances) + suppession_matrix.reshape(suppession_matrix.shape[0] * suppession_matrix.shape[1], -1)  
         w_neuron = np.argmin(distances, axis=0)
         x_idx, y_idx = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
         assert len(x_idx) == 1

@@ -35,6 +35,7 @@ documentation for details.
    :caption: Example Notebooks
 
    notebooks/Kohonen_SOM.ipynb
+   notebooks/concious_SOM_example.ipynb
 
 
 Indices and tables
