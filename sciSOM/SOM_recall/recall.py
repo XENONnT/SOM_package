@@ -263,6 +263,38 @@ def SOM_cls_recall(array_to_fill: np.ndarray,
     array_to_fill['SOM_type'] = reference_map[x_idx, y_idx]
     return array_to_fill
 
+def SOM_location_recall(normalized_data: np.ndarray, 
+                        weight_cube: np.ndarray,) -> np.ndarray:
+    """
+    Takes the data, the weight cube and the classification map and assignes each
+    data point a label based on their cluster.
+
+    Parameters
+    ----------
+    array_to_fill : np.ndarray
+        structured array to fill with the classification
+    data_in_SOM_fmt : np.ndarray
+        data to classify in the SOM format
+    weight_cube : np.ndarray
+        SOM weight cube
+    reference_map : np.ndarray
+        reference map for the SOM
+
+    Returns
+    -------
+    array_to_fill : np.ndarray
+        structured array with the SOM classification added
+    """
+
+    # Want to make it so it works with different metrics in the future
+    array_to_fill = np.empty(len(normalized_data), 2)
+    [SOM_xdim, SOM_ydim, _] = weight_cube.shape
+    distances = cdist(weight_cube.reshape(-1, weight_cube.shape[-1]), normalized_data, metric='euclidean')
+    w_neuron = np.argmin(distances, axis=0)
+    x_idx, y_idx = np.unravel_index(w_neuron, (SOM_xdim, SOM_ydim))
+    array_to_fill = np.vstack((x_idx, y_idx))
+    return array_to_fill.transpose()
+
 def create_mapping_dict(output_classes: Union[list, np.ndarray], 
                         dataset_classes: Union[list, np.ndarray]) -> Dict:
     """
