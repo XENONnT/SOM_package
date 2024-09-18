@@ -27,6 +27,7 @@ class SOM:
                  gamma_off: bool = False,
                  weight_cube: np.ndarray = None,
                  weight_cube_save_states: np.ndarray = None,
+                 custom_scale_sup_matrix: float = 0,
                  csom_learning_radius = 1):
         """
         Initialize the SOM object.
@@ -87,6 +88,7 @@ class SOM:
         self.gamma_off = gamma_off
         self.csom_learning_radius = csom_learning_radius
         self.weight_cube_save_states = weight_cube_save_states
+        self.custom_scale_sup_matrix = custom_scale_sup_matrix
 
         if weight_cube is None:
             self.weight_cube = np.random.rand(x_dim, y_dim, input_dim)
@@ -258,7 +260,10 @@ class SOM:
 
             self.bais_matrix[x_bmu, y_bmu] += beta * (1 - self.bais_matrix[x_bmu, y_bmu])
 
-            self.suppresion_matrix = gamma * ((1/(self.x_dim * self.y_dim)) - self.bais_matrix)
+            if self.custom_scale_sup_matrix == 0:
+                self.suppresion_matrix = gamma * ((1/(self.x_dim * self.y_dim)) - self.bais_matrix)
+            else:
+                self.suppresion_matrix = gamma * (self.custom_scale_sup_matrix - self.bais_matrix)
 
             #distances = (distances ** 2) - self.suppresion_matrix.reshape(self.suppresion_matrix.shape[0] 
             #                                                              * self.suppresion_matrix.shape[1], -1)  
