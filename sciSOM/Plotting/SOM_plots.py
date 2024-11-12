@@ -37,7 +37,7 @@ def plot_SOM_gird_neurons(weight_cube: np.ndarray) -> None:
             ax[i,j].set_xlim(0, data_dim)
             ax[i,j].set_ylim(0, 1)
 
-    plt.show()
+    #plt.show()
 
 
 def plot_mU_matrix(weight_cube: np.ndarray, 
