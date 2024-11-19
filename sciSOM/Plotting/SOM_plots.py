@@ -46,7 +46,9 @@ def plot_mU_matrix(weight_cube: np.ndarray,
                    fence_vmin: float = None,
                    fence_vmax: float = None,
                    density_vmin: float = None,
-                   density_vmax: float = None):
+                   density_vmax: float = None,
+                  log_density: bool = False,
+                  fence_on: bool = True):
 
     """
     Plots the mU-matrix; defined here as the data density per cell
@@ -69,6 +71,10 @@ def plot_mU_matrix(weight_cube: np.ndarray,
         Minimum value for the density matrix (not implemented yet)
     density_vmax : float
         Maximum value for the density matrix (not implemented yet)
+    log_density : bool
+        If True applies a log to the density matrix calculation
+    fence_on : bool
+        If False removes fences from mU matrix image
 
     Returns:
     ----------------
@@ -76,6 +82,7 @@ def plot_mU_matrix(weight_cube: np.ndarray,
     
     """
     height, width, som_dim = np.shape(weight_cube)
+    w_cube = weight_cube
     data_points, data_dim = np.shape(data)
     assert som_dim == data_dim
     
@@ -95,27 +102,41 @@ def plot_mU_matrix(weight_cube: np.ndarray,
         count_grid[bmu_index] += 1
 
     # Normalize count_grid for color mapping
-    norm_counts = count_grid / np.max(count_grid)
+    if log_density == True:
+        count_grid = np.log10(count_grid + 1)
+        
+    if set_costum_min_max is False:
+        norm_counts = count_grid / np.max(count_grid)
+    else:
+        if density_vmax == None:
+            norm_counts = count_grid / np.max(count_grid)
+        else:
+            norm_counts = count_grid / np.max(density_vmax)
     
     # In progress
-    down_shifted_weight_cube = np.vstack((w_cube[-1:, :, :], 
-                                           w_cube[:-1, :, :]))
+    if fence_on:
+        down_shifted_weight_cube = np.vstack((w_cube[-1:, :, :], 
+                                               w_cube[:-1, :, :]))
 
-    right_shifted_weight_cube = np.hstack((w_cube[:, -1:, :], 
-                                         w_cube[:, :-1, :], ))
+        right_shifted_weight_cube = np.hstack((w_cube[:, -1:, :], 
+                                             w_cube[:, :-1, :], ))
 
-    vertical_lines = np.sqrt(np.sum((w_cube - down_shifted_weight_cube) ** 2, 
-                                    axis=-1))
-    horizontal_lines = np.sqrt(np.sum((w_cube - right_shifted_weight_cube) ** 2, 
-                                    axis=-1))
-    
-    # Need to drop first row/column since its comparing opposite edges
-    if set_costum_min_max == False:
-        vmin = min(np.min(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
-        vmax = max(np.max(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
-    elif set_costum_min_max == True:
-        vmin = fence_vmin
-        vmax = fence_vmax
+        vertical_lines = np.sqrt(np.sum((w_cube - down_shifted_weight_cube) ** 2, 
+                                        axis=-1))
+        horizontal_lines = np.sqrt(np.sum((w_cube - right_shifted_weight_cube) ** 2, 
+                                        axis=-1))
+
+        # Need to drop first row/column since its comparing opposite edges
+        if set_costum_min_max == False:
+            vmin = min(np.min(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
+            vmax = max(np.max(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
+        elif set_costum_min_max == True:
+            if ((fence_vmin or fence_vmax) == None):
+                vmin = min(np.min(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
+                vmax = max(np.max(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
+            else:
+                vmin = fence_vmin
+                vmax = fence_vmax
     
     fig, ax = plt.subplots()
     
@@ -125,16 +146,17 @@ def plot_mU_matrix(weight_cube: np.ndarray,
                                        color=cmap(norm_counts[i, j]),
                                        ec='black'))
     
-    for i in range(height):
-        for j in range(width):
-            if i < height - 1:  # Vertical line (between current and below)
-                #u_diff = np.linalg.norm(weightcube[i, j] - weightcube[i + 1, j])
-                color = plt.cm.gray(vertical_lines[i+1,j] / vmax)
-                ax.plot([j, j + 1], [height - i - 1, height - i - 1], color=color)
-                
-            if j < width - 1:
-                color = plt.cm.gray(horizontal_lines[i,j+1] / vmax)
-                ax.plot([j + 1, j + 1], [height - i - 1, height - i], color=color)
+    if fence_on:
+        for i in range(height):
+            for j in range(width):
+                if i < height - 1:  # Vertical line (between current and below)
+                    #u_diff = np.linalg.norm(weightcube[i, j] - weightcube[i + 1, j])
+                    color = plt.cm.gray(vertical_lines[i+1,j] / vmax)
+                    ax.plot([j, j + 1], [height - i - 1, height - i - 1], color=color)
+
+                if j < width - 1:
+                    color = plt.cm.gray(horizontal_lines[i,j+1] / vmax)
+                    ax.plot([j + 1, j + 1], [height - i - 1, height - i], color=color)
             
     
     ax.set_xlim(0, width)
@@ -142,7 +164,7 @@ def plot_mU_matrix(weight_cube: np.ndarray,
     ax.set_aspect('equal')
     ax.axis('off')  # Turn off the axis
     plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.show()         
+    plt.show()    
 
     
 def calculate_u_matrix(weight_cube: np.ndarray):
@@ -269,93 +291,6 @@ def rise_time_vs_area_SOM_clusters(data: np.ndarray, colors: Union[list, np.ndar
             ax[i,j].set_xlim(1,10000000)
             ax[i,j].set_ylim(10,100000)
             num = num + 1
-
-
-def plot_mU_matrix(weight_cube: np.ndarray, 
-                  data: np.ndarray,
-                  set_costum_min_max: bool = False,
-                  user_vmin: float =  None,
-                  user_vmax: float =  None) -> None:
-    """
-    Plots the mU-matrix; defined here as the data density per cell
-    and the lines between cells representing the distance between
-    adjacent cells.
-    
-    Parameters:
-    ============
-    weight_cube : np.ndarray
-    
-    """
-    height, width, som_dim = np.shape(weight_cube)
-    data_points, data_dim = np.shape(data)
-    assert som_dim == data_dim
-    
-    cmap = LinearSegmentedColormap.from_list('black_to_red', ['black', 'red'])
-    
-    som_shape = (height, width)
-    w_cube = weight_cube
-
-    # Initialize grid to store counts of data points mapped to each node
-    count_grid = np.zeros(som_shape)
-
-    # Calculate the BMU (Best Matching Unit) for each data point
-    for point in data:
-        # Compute distances to each neuron
-        distances = np.linalg.norm(weight_cube - point, axis=-1)
-        # Find index of the neuron with the smallest distance
-        bmu_index = np.unravel_index(np.argmin(distances), som_shape)
-        count_grid[bmu_index] += 1
-
-    # Normalize count_grid for color mapping
-    norm_counts = count_grid / np.max(count_grid)
-    
-    # In progress
-    down_shifted_weight_cube = np.vstack((w_cube[-1:, :, :], 
-                                           w_cube[:-1, :, :]))
-
-    right_shifted_weight_cube = np.hstack((w_cube[:, -1:, :], 
-                                         w_cube[:, :-1, :], ))
-
-    vertical_lines = np.sqrt(np.sum((w_cube - down_shifted_weight_cube) ** 2, 
-                                    axis=-1))
-    horizontal_lines = np.sqrt(np.sum((w_cube - right_shifted_weight_cube) ** 2, 
-                                    axis=-1))
-    
-    # Need to drop first row/column since its comparing opposite edges
-    if set_costum_min_max == False:
-        vmin = min(np.min(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
-        vmax = max(np.max(vertical_lines[1:,:]), np.min(horizontal_lines[:,1:]))
-    elif set_costum_min_max == True:
-        vmin = user_vmin
-        vmax = user_vmax
-    
-    fig, ax = plt.subplots()
-    
-    for i in range(height):
-        for j in range(width):
-            ax.add_patch(plt.Rectangle((j, height - i - 1), 1, 1,
-                                       color=cmap(norm_counts[i, j]),
-                                       
-                                       ec='black'))
-    
-    for i in range(height):
-        for j in range(width):
-            if i < height - 1:  # Vertical line (between current and below)
-                #u_diff = np.linalg.norm(weightcube[i, j] - weightcube[i + 1, j])
-                color = plt.cm.gray(vertical_lines[i+1,j] / vmax)
-                ax.plot([j, j + 1], [height - i - 1, height - i - 1], color=color)
-                
-            if j < width - 1:
-                color = plt.cm.gray(horizontal_lines[i,j+1] / vmax)
-                ax.plot([j + 1, j + 1], [height - i - 1, height - i], color=color)
-            
-    
-    ax.set_xlim(0, width)
-    ax.set_ylim(0, height)
-    ax.set_aspect('equal')
-    ax.axis('off')  # Turn off the axis
-    plt.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    plt.show()
 
 
 def SOM_gird_avg_wavefrom_per_cell(input_data: np.ndarray, 
