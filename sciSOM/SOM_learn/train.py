@@ -106,10 +106,10 @@ class SOM:
         # Check if the learning parameters are correct
         self.learning_rate_history = np.zeros(n_iter)
         self.learning_radius_history = np.zeros(n_iter)
+        self.frequency_matrix = np.zeros((x_dim, y_dim))
+        self.frequency_matrix_history = np.zeros((x_dim, y_dim, n_iter))
         self.bais_matrix = np.zeros((x_dim, y_dim))
         self.bais_matrix_history = np.zeros((x_dim, y_dim, n_iter))
-        self.suppresion_matrix = np.zeros((x_dim, y_dim))
-        self.suppresion_matrix_history = np.zeros((x_dim, y_dim, n_iter))
         self.save_neighborhood_function = np.zeros((x_dim, y_dim, n_iter))
         self.track_mbu = np.zeros((2, n_iter))
         self.track_radius_limits = np.zeros((4, n_iter))
@@ -238,47 +238,34 @@ class SOM:
         counter = 0
 
         for i in range(self.n_iter):
-            # Calcualte initial BMU
-            distances = cdist(self.weight_cube.reshape(-1, self.weight_cube.shape[-1]), 
-                        data[int(indecies[i])].reshape(1,self.input_dim), 
-                        metric='euclidean')
-            
-            w_neuron = np.argmin(distances, axis=0)
-            x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
+            # We cannont calculate the BMU in the same way as before
+            # We first need the other values to calculate the BMU
+            # Calculate all frequency values, initial state is 0
 
             # Conciouse mechanism
             alpha, beta, gamma = self.decay_cSOM(i)
             if self.gamma_off == True:
                 gamma = 0
 
-            # Setting gamma to 0 as a test, should give cSOM -> Kohonen
-            #gamma = 0
-            # compute supressiong term
+            # Calculate bais term
+            if self.custom_scale_sup_matrix == 0:
+                self.bais_matrix = gamma * ((1/(self.x_dim * self.y_dim)) - self.frequency_matrix)
+            else:
+                self.bais_matrix = gamma * (self.custom_scale_sup_matrix - self.frequency_matrix)
+
+            x_concious_bmu, y_concious_bmu = self.compute_bmu_cSOM(data, indecies, 
+                                                                   i, self.bais_matrix)
 
             if self.save_weight_cube_history:
-                self.weight_cube_history[x_bmu, y_bmu] += 1
+                self.weight_cube_history[x_concious_bmu, y_concious_bmu] += 1
 
-            self.bais_matrix[x_bmu, y_bmu] += beta * (1 - self.bais_matrix[x_bmu, y_bmu])
+            # Update the frequency term for next round
+            self.frequency_matrix[x_concious_bmu, y_concious_bmu] += beta * (1 - self.frequency_matrix[x_concious_bmu, y_concious_bmu])
 
-            if self.custom_scale_sup_matrix == 0:
-                self.suppresion_matrix = gamma * ((1/(self.x_dim * self.y_dim)) - self.bais_matrix)
-            else:
-                self.suppresion_matrix = gamma * (self.custom_scale_sup_matrix - self.bais_matrix)
-
-            #distances = (distances ** 2) - self.suppresion_matrix.reshape(self.suppresion_matrix.shape[0] 
-            #                                                              * self.suppresion_matrix.shape[1], -1)  
-            #w_neuron = np.argmin(distances, axis=0)
-            #x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
-
-
+            self.frequency_matrix_history[:, :, i] = self.frequency_matrix
             self.bais_matrix_history[:, :, i] = self.bais_matrix
-            self.suppresion_matrix_history[:, :, i] = self.suppresion_matrix
             self.learning_rate_history[i] = alpha
             self.learning_radius_history[i] = learning_radius
-
-            # recalculate winning neuron
-            x_concious_bmu, y_concious_bmu = self.compute_bmu_cSOM(data, indecies, 
-                                                                   i, self.suppresion_matrix)
 
             x_min, x_max, y_min, y_max = self.compute_neighborhood(x_concious_bmu, 
                                                                    y_concious_bmu, 
@@ -299,6 +286,15 @@ class SOM:
                 if i == self.weight_cube_save_states[counter]:
                     self.som_save_state[counter,:,:,:] = self.weight_cube.copy()
                     counter += 1
+
+            ###### Everything bellow here is the old code
+
+            #distances = (distances ** 2) - self.suppresion_matrix.reshape(self.suppresion_matrix.shape[0] 
+            #                                                              * self.suppresion_matrix.shape[1], -1)  
+            #w_neuron = np.argmin(distances, axis=0)
+            #x_bmu, y_bmu = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
+
+            # recalculate winning neuron
     
     def compute_bmu(self, data, indecies, iteration):
         distances = cdist(self.weight_cube.reshape(-1, self.weight_cube.shape[-1]), 
@@ -318,7 +314,7 @@ class SOM:
         # When plotting it looks like the suppresion matrix becomes negative
         # which does the opposite of baising the BMU. I will try to make it 
         # positive to see what happens. 
-        distances = (distances) + suppession_matrix.reshape(suppession_matrix.shape[0] * suppession_matrix.shape[1], -1)  
+        distances = distances - suppession_matrix.reshape(suppession_matrix.shape[0] * suppession_matrix.shape[1], -1)  
         w_neuron = np.argmin(distances, axis=0)
         x_idx, y_idx = np.unravel_index(w_neuron, (self.x_dim, self.y_dim))
         assert len(x_idx) == 1
