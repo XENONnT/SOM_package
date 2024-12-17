@@ -3,7 +3,6 @@ from typing import Any, Union, Dict
 #import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 import numpy.lib.recfunctions as rfn
-import strax
 import viff
 
 # Lets organize this a bit better

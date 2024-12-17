@@ -1,7 +1,10 @@
-import strax
 import numba
 import numpy as np
-
+try:
+    import straxen
+    HAS_STRAXEN = True
+except ImportError:
+    HAS_STRAXEN = False
 
 def data_to_log_decile_log_area_aft(peaklet_data: np.ndarray, 
                                     normalization_factor: np.ndarray) -> np.ndarray:
@@ -28,6 +31,9 @@ def data_to_log_decile_log_area_aft(peaklet_data: np.ndarray,
     """
     # turn deciles into approriate 'normalized' format
     # (maybe also consider L1 normalization of these inputs)
+
+    if not HAS_STRAXEN:
+        raise ImportError("straxen is not installed. Please install straxen to use this function")
     decile_data = compute_quantiles(peaklet_data, 10)
     data = peaklet_data.copy()
     decile_data[decile_data < 1] = 1
@@ -146,6 +152,9 @@ def data_to_log_decile_log_area_aft_generate(peaklet_data):
     10 -> max of the log of the area => to normalize to 1
     11 -> keep track of the minimum value used to add to all other data
     """
+    if not HAS_STRAXEN:
+        raise ImportError("straxen is not installed. Please install straxen to use this function")
+
     # turn deciles into approriate 'normalized' format (maybe also consider L1 normalization of these inputs)
     decile_data = compute_quantiles(peaklet_data, 10)
     data = peaklet_data.copy()

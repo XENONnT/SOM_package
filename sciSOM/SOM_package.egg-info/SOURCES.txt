@@ -1,7 +1,0 @@
-README.md
-setup.py
-SOM_package.egg-info/PKG-INFO
-SOM_package.egg-info/SOURCES.txt
-SOM_package.egg-info/dependency_links.txt
-SOM_package.egg-info/requires.txt
-SOM_package.egg-info/top_level.txt
