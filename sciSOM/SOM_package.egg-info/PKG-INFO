@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: SOM_package
-Version: 0.1
-Requires-Dist: viffIO>=0.0.1
-Requires-Dist: numpy>=1.22.4
-Requires-Dist: strax>=1.5.2
-Requires-Dist: matplotlib>=3.7.1
