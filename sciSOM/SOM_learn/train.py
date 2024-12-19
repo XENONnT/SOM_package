@@ -361,8 +361,8 @@ class SOM:
 
         if self.histories == True:
             self.save_neighborhood_function[:,:,iter] = update_neighborhood
-        self.track_mbu[:,iter] = [x_bmu, y_bmu]
-        self.track_radius_limits[:, iter] = [x_min, x_max, y_min, y_max]
+            self.track_mbu[:,iter] = [x_bmu, y_bmu]
+            self.track_radius_limits[:, iter] = [x_min, x_max, y_min, y_max]
 
         return update_neighborhood
         # Want to make it so the value is 1 at the BMU and decays with distance.
