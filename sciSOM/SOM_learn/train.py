@@ -359,7 +359,8 @@ class SOM:
         elif self.neighborhood_decay == "none":
             update_neighborhood[x_min:x_max:, y_min: y_max] = 1
 
-        self.save_neighborhood_function[:,:,iter] = update_neighborhood
+        if self.histories == True:
+            self.save_neighborhood_function[:,:,iter] = update_neighborhood
         self.track_mbu[:,iter] = [x_bmu, y_bmu]
         self.track_radius_limits[:, iter] = [x_min, x_max, y_min, y_max]
 
