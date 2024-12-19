@@ -28,7 +28,8 @@ class SOM:
                  weight_cube: np.ndarray = None,
                  weight_cube_save_states: np.ndarray = None,
                  custom_scale_sup_matrix: float = 0,
-                 csom_learning_radius = 1):
+                 csom_learning_radius: int = 1,
+                 histories: bool = False):
         """
         Initialize the SOM object.
 
@@ -86,6 +87,7 @@ class SOM:
         self.is_trained = False
         self.save_weight_cube_history = save_weight_cube_history
         self.gamma_off = gamma_off
+        self.histories = histories
         self.csom_learning_radius = csom_learning_radius
         self.weight_cube_save_states = weight_cube_save_states
         self.custom_scale_sup_matrix = custom_scale_sup_matrix
@@ -104,15 +106,17 @@ class SOM:
             raise ValueError(f"Mode {mode} is not supported. Choose from {list(self.mode_methods.keys())}")
         
         # Check if the learning parameters are correct
-        self.learning_rate_history = np.zeros(n_iter)
-        self.learning_radius_history = np.zeros(n_iter)
+        if histories == True:
+            self.learning_rate_history = np.zeros(n_iter)
+            self.learning_radius_history = np.zeros(n_iter)
+            self.bais_matrix_history = np.zeros((x_dim, y_dim, n_iter))
+            self.save_neighborhood_function = np.zeros((x_dim, y_dim, n_iter))
+            self.track_mbu = np.zeros((2, n_iter))
+            self.track_radius_limits = np.zeros((4, n_iter))
+            self.frequency_matrix_history = np.zeros((x_dim, y_dim, n_iter))
         self.frequency_matrix = np.zeros((x_dim, y_dim))
-        self.frequency_matrix_history = np.zeros((x_dim, y_dim, n_iter))
         self.bais_matrix = np.zeros((x_dim, y_dim))
-        self.bais_matrix_history = np.zeros((x_dim, y_dim, n_iter))
-        self.save_neighborhood_function = np.zeros((x_dim, y_dim, n_iter))
-        self.track_mbu = np.zeros((2, n_iter))
-        self.track_radius_limits = np.zeros((4, n_iter))
+
 
         if weight_cube_save_states is not None:
             self.som_save_state = np.zeros(((len(weight_cube_save_states)),
@@ -262,10 +266,11 @@ class SOM:
             # Update the frequency term for next round
             self.frequency_matrix[x_concious_bmu, y_concious_bmu] += beta * (1 - self.frequency_matrix[x_concious_bmu, y_concious_bmu])
 
-            self.frequency_matrix_history[:, :, i] = self.frequency_matrix
-            self.bais_matrix_history[:, :, i] = self.bais_matrix
-            self.learning_rate_history[i] = alpha
-            self.learning_radius_history[i] = learning_radius
+            if self.histories == True:
+                self.frequency_matrix_history[:, :, i] = self.frequency_matrix
+                self.bais_matrix_history[:, :, i] = self.bais_matrix
+                self.learning_rate_history[i] = alpha
+                self.learning_radius_history[i] = learning_radius
 
             x_min, x_max, y_min, y_max = self.compute_neighborhood(x_concious_bmu, 
                                                                    y_concious_bmu, 
