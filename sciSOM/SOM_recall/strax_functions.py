@@ -176,8 +176,8 @@ def data_to_log_decile_log_area_aft_generate(peaklet_data):
                                        np.reshape(peaklet_log_area, (len(peaklet_log_area), 1)) / np.max(peaklet_log_area),
                                        np.reshape(peaklet_aft, (len(peaklet_log_area), 1))), axis=1)
     
-    norm_factors = np.concatenate((np.max(decile_log, axis = 0), np.max(np.log10(peaklet_data['area'])).reshape(1)))
-    norm_factors = np.concatenate((norm_factors, np.abs(np.min(peaklet_data['area'])).reshape(1)))
+    norm_factors = np.concatenate((np.max(decile_log, axis = 0), np.max(peaklet_log_area).reshape(1)))
+    norm_factors = np.concatenate((norm_factors, np.abs(min_area).reshape(1)))
     
     return deciles_area_aft, norm_factors
 
