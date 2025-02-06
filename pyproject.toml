@@ -8,13 +8,13 @@ version = "0.2.0"
 decription = "SOM software for scientists"
 dependencies = [
     'viffIO>=0.0.1',
-    'numba>=0.54.0',
-    'numpy>=2.0.1',
-    'pandas>=2.2.2',
-    'matplotlib>=3.7.1',
-    'pytest>=8.3.0',
-    'hypothesis>=6.100.0',
-    'panel>=0.14.2'
+    'numba',
+    'numpy',
+    'pandas',
+    'matplotlib',
+    'pytest',
+    'hypothesis',
+    'panel'
 ]
 
 [project.optional-dependencies]
