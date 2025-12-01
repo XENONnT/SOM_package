@@ -9,6 +9,7 @@ def docs(session: nox.session) -> None:
     First position argument is the target directory.
     """
 
+    session.run("python", "-m", "pip", "install", "--upgrade", "pip>=23.1", external = True)
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "-b", dest="builder", default="html", help="Build targer, defualt: html."

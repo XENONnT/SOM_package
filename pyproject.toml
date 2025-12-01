@@ -10,6 +10,7 @@ dependencies = [
     'viffIO>=0.0.1',
     'numba',
     'numpy',
+    'scipy',
     'pandas',
     'matplotlib',
     'pytest',
