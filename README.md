@@ -29,6 +29,8 @@ Finally note that the cSOM function is not fully opperational as of yet so I wou
 
 If you see/find any bugs feel free to either report the issue or submit a pull request!
 
+Adding small test here
+
 ## Credit
 
 The remap module was inspired by a module of the same name in NeuroScope. This NueroScope remap module has much more sofisticated capabilities, the implementation here is a rudamentary version of this. For more information on NeuroScope please contact [Erzsébet Merényi](https://profiles.rice.edu/faculty/erzsebet-merenyi): 713-348-3595 | [erzsebet@rice.edu](mailto:erzsebet@rice.edu?subject=Subject&body=Text)
