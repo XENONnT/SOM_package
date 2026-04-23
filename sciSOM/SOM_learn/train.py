@@ -236,6 +236,18 @@ class SOM:
     def cSOM(self, data, indecies):
         """
         Train the SOM using the concious SOM algorithm.
+
+        The implementation of the conscience SOM follows NeuralWare's implementation that 
+        is used in the NeuroScope environment and is given in NeuralWare documentation
+        as well as in the documentation of NeuroScope ann-SOMconsc module.
+        For more information you may contact [Erzsébet Merényi](erzsebet@rice.edu):
+
+        Prof. Merényi was not consulted on the implementation of sciSOM functions that 
+    intend to mimic NeuroScope functionalities of the same name, nor did she have 
+    opportunity to inspect proof of faithfulness to the same-name module in NeuroScope 
+    or correctness of the corresponding sciSOM code. Therefore, Dr. Merényi and the 
+    NeuroScope group take no responsibility for the likeness and the correctness of 
+    the functions implemented to mimic (partial) NeuroScope capabilities in sciSOM.
         """
         # Test in controlling the learning radius:
         learning_radius = self.csom_learning_radius # Leave this for SOM development, but should be set to 1 for cSOM

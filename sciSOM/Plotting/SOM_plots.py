@@ -54,7 +54,20 @@ def plot_mU_matrix(weight_cube: np.ndarray,
     Plots the mU-matrix; defined here as the data density per cell
     and the lines between cells representing the distance between
     adjacent cells.
-    
+
+    This implementation mimicks the major aspects of the mU-matrix in 
+    NueroScope (refer to [cite figure such as such of mU-matrix paper]).
+
+    Complete information on the NeuroScope implementation of the mU-matrix
+    is given in respective NeuroScope documentation, available upon request from
+    [Erzsébet Merényi](erzsebet@rice.edu| [
+
+    Prof. Merényi was not consulted on the implementation of sciSOM functions that 
+    intend to mimic NeuroScope functionalities of the same name, nor did she have 
+    opportunity to inspect proof of faithfulness to the same-name module in NeuroScope 
+    or correctness of the corresponding sciSOM code. Therefore, Dr. Merényi and the 
+    NeuroScope group take no responsibility for the likeness and the correctness of 
+    the functions implemented to mimic (partial) NeuroScope capabilities in sciSOM.
     Parameters:
     -------------------
     weight_cube : np.ndarray
@@ -167,7 +180,7 @@ def plot_mU_matrix(weight_cube: np.ndarray,
     plt.show()    
 
     
-def calculate_u_matrix(weight_cube: np.ndarray):
+def calculate_distance_btw_adjacent_prototypes(weight_cube: np.ndarray):
     """
     Calculate the distance (fences) for each adjacent neuron in an SOM.
 
@@ -181,11 +194,11 @@ def calculate_u_matrix(weight_cube: np.ndarray):
 
     Returns
     -------
-    u_matrix : np.ndarray
+    distance_btw_proto : np.ndarray
         The distance matrix for neurons in the SOM
     """
     x, y, _ = weight_cube.shape
-    u_matrix = np.zeros((x, y))
+    distance_btw_proto = np.zeros((x, y))
 
     for i in range(x):
         for j in range(y):
@@ -200,12 +213,11 @@ def calculate_u_matrix(weight_cube: np.ndarray):
                 neighbors.append(weight_cube[i, j+1])
 
             distances = [np.linalg.norm(weight_cube[i, j] - neighbor) for neighbor in neighbors]
-            u_matrix[i, j] = np.mean(distances)
+            distance_btw_proto[i, j] = np.mean(distances)
 
-    return u_matrix
+    return distance_btw_proto
 
 def calculate_density_matrix(weight_cube: np.ndarray, 
-                             u_matrix: np.ndarray, 
                              dataset: np.ndarray) -> np.ndarray:
     """
     Calculate density matrix for a given som weight cube and dataset.
@@ -218,8 +230,6 @@ def calculate_density_matrix(weight_cube: np.ndarray,
 
     weight_cube : np.ndarray
         SOM weight cube
-    u_matrix : np.ndarray
-        output from calculate_u_matrix
     dataset:    
         Data in the same form given to the SOM as input for training
 
@@ -228,7 +238,7 @@ def calculate_density_matrix(weight_cube: np.ndarray,
     density_matrix : np.ndarray
         The density matrix for the given dataset
     """
-    x, y = u_matrix.shape
+    x, y, _ = weight_cube.shape
     density_matrix = np.zeros((x, y))
 
     for data_point in dataset:
