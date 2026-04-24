@@ -4,10 +4,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../../../genindex.html"><link rel="search" title="Search" href="../../../search.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>sciSOM.SOM_learn.train - sciSOM 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -495,6 +495,18 @@
     <span class="k">def</span><span class="w"> </span><span class="nf">cSOM</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">indecies</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Train the SOM using the concious SOM algorithm.</span>
+
+<span class="sd">        The implementation of the conscience SOM follows NeuralWare&#39;s implementation that </span>
+<span class="sd">        is used in the NeuroScope environment and is given in NeuralWare documentation</span>
+<span class="sd">        as well as in the documentation of NeuroScope ann-SOMconsc module.</span>
+<span class="sd">        For more information you may contact [Erzsébet Merényi](erzsebet@rice.edu):</span>
+
+<span class="sd">        Prof. Merényi was not consulted on the implementation of sciSOM functions that </span>
+<span class="sd">    intend to mimic NeuroScope functionalities of the same name, nor did she have </span>
+<span class="sd">    opportunity to inspect proof of faithfulness to the same-name module in NeuroScope </span>
+<span class="sd">    or correctness of the corresponding sciSOM code. Therefore, Dr. Merényi and the </span>
+<span class="sd">    NeuroScope group take no responsibility for the likeness and the correctness of </span>
+<span class="sd">    the functions implemented to mimic (partial) NeuroScope capabilities in sciSOM.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Test in controlling the learning radius:</span>
         <span class="n">learning_radius</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">csom_learning_radius</span> <span class="c1"># Leave this for SOM development, but should be set to 1 for cSOM</span>
@@ -806,8 +818,8 @@
     </aside>
   </div>
 </div><script src="../../../_static/documentation_options.js?v=938c9ccc"></script>
-    <script src="../../../_static/doctools.js?v=9a2dae69"></script>
-    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../../../_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="../../../_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="../../../_static/copybutton.js?v=f281be69"></script>
