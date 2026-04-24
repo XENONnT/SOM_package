@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="SOM_package" href="modules.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>sciSOM 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -284,9 +284,33 @@ documentation for details.</p>
 </ul>
 <p>Finally note that the cSOM function is not fully opperational as of yet so I would advise against using it.</p>
 <p>If you see/find any bugs feel free to either report the issue or submit a pull request!</p>
+<p>Adding small test here</p>
 <section id="credit">
 <h3>Credit<a class="headerlink" href="#credit" title="Link to this heading">¶</a></h3>
-<p>The remap module was inspired by a module of the same name in NeuroScope. This NueroScope remap module has much more sofisticated capabilities, the implementation here is a rudamentary version of this. For more information on NeuroScope please contact <a class="reference external" href="https://profiles.rice.edu/faculty/erzsebet-merenyi">Erzsébet Merényi</a>: 713-348-3595 | <a class="reference external" href="mailto:erzsebet&#37;&#52;&#48;rice&#46;edu?subject=Subject&amp;amp;body=Text">erzsebet<span>&#64;</span>rice<span>&#46;</span>edu</a></p>
+<ul class="simple">
+<li><p>This part can go to remap*
+The remap module was mimicked by a module of the same name in NeuroScope. This NueroScope remap module has much more sofisticated capabilities, the implementation here is a rudamentary version of this. For more information on NeuroScope please contact <a class="reference external" href="https://profiles.rice.edu/faculty/erzsebet-merenyi">Erzsébet Merényi</a>: 713-348-3595 | <a class="reference external" href="mailto:erzsebet&#37;&#52;&#48;rice&#46;edu?subject=Subject&amp;amp;body=Text">erzsebet<span>&#64;</span>rice<span>&#46;</span>edu</a></p></li>
+</ul>
+<p>Some of the sciSOM functions were mimicked (in a paired-down way) after the same-name modules in NeuroScope. We point this out in the in-line documentation of the respective functions.</p>
+<p>NeuroScope is an algorithm development and data analysis environment comprising modules for SOM learning and related capabilities to evaluate the correctness of learning, topology preservation, and visualization and other techniques, for “precision extraction” of clusters from learned SOMs. Relevant to Dark Matter search, the capabilities include preferential detection of (unknown) rare clusters. NeuroScope also contains broader capabilities such as SOM-based precise multi-class supervised classification [1-6]. This environment has been developed and maintained by Prof. Erzsébet Merényi and her group with years of support from NASA and other government and non-government agencies. The capabilities have extensively been used in scientific research projects with demonstrated consistently accurate and reliable results including strong discovery potential from high-dimensional, large data with complex structure [7-9] A subset of NeuroScope capabilities relevant for an astronomy project for clustering hyperspectral ALMA cubes to map regions of different kinematic behavior in astrophysical objects is portrayed in [10-11].</p>
+<p>[1] E. Mer\ ́enyi, K. Tasdemir and L. Zhang, Learning highly structured manifolds: Harnessing the power of SOMs, in Similarity-Based Clustering: Recent Developments and Biomedical Applications, M. Biehl, B. Hammer, M. Verleysen and T. Villmann, eds., (Berlin, Heidelberg), pp. 138–168, Springer Berlin Heidelberg (2009), DOI</p>
+<p>[2]K. Ta\ ̧sdemir and E. Mer´enyi, Exploiting data topology in visualization and clustering of self-organizing maps, Neural Netw. 20 (2009) 549–562.</p>
+<p>[3] K. Ta\ ̧sdemir and E. Mer\ ́enyi, A validity index for prototype based clustering of data sets with complex structures, IEEE Transactions on Systems, Man and Cybernetics, Part B 41 (2011) 1039.</p>
+<p>[4] L. Zhang and E. Mer\ ́enyi, Weighted differential topographic function: A refinement of
+the topographic function, in Proceedings of the 14th European Symposium on Artificial
+Neural Networks (ESANN’2006), (Bruges, Belgium), pp. 13–18, April, 2006.</p>
+<p>[5] K. Ta ̧sdemir and E. Mer ́enyi, SOM-based topology visualization for interactive analysis of high-dimensional large datasets, Machine Learning Reports 05 (2012) .</p>
+<p>[6] E. Mer\ ́enyi, A. Jain and T. Villmann, Explicit magnification control of self-organizing maps for forbidden data, IEEE Transactions on Neural Networks 18 (2007) 786.</p>
+<p>[7] E. Mer\ ́enyi, J. Taylor and A. Isella, Deep data: discovery and visualization application to hyperspectral alma imagery, Proceedings of the International Astronomical Union 12 (2016) 281–290.</p>
+<p>[8] E. Mer\ ́enyi and J. Taylor, SOM-empowered graph segmentation for fast automatic clustering of large and complex data, in 2017 12th International Workshop on Self-Organizing Maps and Learning Vector Quantization, Clustering and Data Visualization (WSOM), pp. 1–9, 2017, DOI.</p>
+<p>[9] E. Mer ́enyi, R.B. Singer and J.S. Miller, Mapping of spectral variations on the surface of mars from high spectral resolution telescopic images, Icarus 124 (1996) 280–295.</p>
+<p>[10] E. Mer ́enyi, et al. NeuroScope: Neural machine intelligence tools for discovery and interpretation in complex ALMA data, Final Report ALMA Study 358232, Rice University (June, 2019).</p>
+<p>[11] E. Mer ́enyi, A. Isella and J. Taylor, “NeuroScope for ALMA data.” Rice University,
+2019. https://neuroscope.blogs.rice.edu/.</p>
+</section>
+<section id="disclaimer">
+<h3>Disclaimer<a class="headerlink" href="#disclaimer" title="Link to this heading">¶</a></h3>
+<p>Prof. Merényi was not consulted on the implementation of sciSOM functions that intend to mimic NeuroScope functionalities of the same name, nor did she have opportunity to inspect proof of faithfulness to the same-name module in NeuroScope or correctness of the corresponding sciSOM code. Therefore, Dr. Merényi and the NeuroScope group take no responsibility for the likeness and the correctness of the functions implemented to mimic (partial) NeuroScope capabilities in sciSOM.</p>
 </section>
 </section>
 <div class="toctree-wrapper compound">
@@ -371,6 +395,7 @@ documentation for details.</p>
 <li><a class="reference internal" href="#">sciSOM documentation</a><ul>
 <li><a class="reference internal" href="#som-package">SOM_package</a><ul>
 <li><a class="reference internal" href="#credit">Credit</a></li>
+<li><a class="reference internal" href="#disclaimer">Disclaimer</a></li>
 </ul>
 </li>
 </ul>
@@ -386,13 +411,11 @@ documentation for details.</p>
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=938c9ccc"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
-    <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

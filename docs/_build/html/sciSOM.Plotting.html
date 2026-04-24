@@ -5,10 +5,10 @@
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="index" title="Index" href="genindex.html"><link rel="search" title="Search" href="search.html"><link rel="next" title="sciSOM.SOM_learn package" href="sciSOM.SOM_learn.html"><link rel="prev" title="sciSOM package" href="sciSOM.html">
 
-    <!-- Generated with Sphinx 7.4.7 and Furo 2025.09.25 -->
+    <!-- Generated with Sphinx 9.0.4 and Furo 2025.12.19 -->
         <title>sciSOM.Plotting package - sciSOM 0.2.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
-    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=580074bf" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?v=8dab3a3b" />
     
@@ -310,7 +310,7 @@ data point a label based on their cluster.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="sciSOM.Plotting.SOM_plots.calculate_density_matrix">
-<span class="sig-prename descclassname"><span class="pre">sciSOM.Plotting.SOM_plots.</span></span><span class="sig-name descname"><span class="pre">calculate_density_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_cube</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u_matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sciSOM/Plotting/SOM_plots.html#calculate_density_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sciSOM.Plotting.SOM_plots.calculate_density_matrix" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">sciSOM.Plotting.SOM_plots.</span></span><span class="sig-name descname"><span class="pre">calculate_density_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_cube</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sciSOM/Plotting/SOM_plots.html#calculate_density_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sciSOM.Plotting.SOM_plots.calculate_density_matrix" title="Link to this definition">¶</a></dt>
 <dd><p>Calculate density matrix for a given som weight cube and dataset.</p>
 <p><strong>This function is not working as intended, need to review it</strong>
 It is not acutally using the information of the u_matrix</p>
@@ -318,7 +318,6 @@ It is not acutally using the information of the u_matrix</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>weight_cube</strong> (<em>np.ndarray</em>) – SOM weight cube</p></li>
-<li><p><strong>u_matrix</strong> (<em>np.ndarray</em>) – output from calculate_u_matrix</p></li>
 <li><p><strong>dataset</strong> (<span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span>) – Data in the same form given to the SOM as input for training</p></li>
 </ul>
 </dd>
@@ -332,8 +331,8 @@ It is not acutally using the information of the u_matrix</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="sciSOM.Plotting.SOM_plots.calculate_u_matrix">
-<span class="sig-prename descclassname"><span class="pre">sciSOM.Plotting.SOM_plots.</span></span><span class="sig-name descname"><span class="pre">calculate_u_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_cube</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sciSOM/Plotting/SOM_plots.html#calculate_u_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sciSOM.Plotting.SOM_plots.calculate_u_matrix" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="sciSOM.Plotting.SOM_plots.calculate_distance_btw_adjacent_prototypes">
+<span class="sig-prename descclassname"><span class="pre">sciSOM.Plotting.SOM_plots.</span></span><span class="sig-name descname"><span class="pre">calculate_distance_btw_adjacent_prototypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_cube</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/sciSOM/Plotting/SOM_plots.html#calculate_distance_btw_adjacent_prototypes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#sciSOM.Plotting.SOM_plots.calculate_distance_btw_adjacent_prototypes" title="Link to this definition">¶</a></dt>
 <dd><p>Calculate the distance (fences) for each adjacent neuron in an SOM.</p>
 <p>(Need to review this function, dont fully remember what is going on in the
 implementation)</p>
@@ -342,7 +341,7 @@ implementation)</p>
 <dd class="field-odd"><p><strong>weight_cube</strong> (<em>np.ndarray</em>) – The weight cube for the SOM</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>u_matrix</strong> – The distance matrix for neurons in the SOM</p>
+<dd class="field-even"><p><strong>distance_btw_proto</strong> – The distance matrix for neurons in the SOM</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -399,11 +398,24 @@ None</p>
 <dd><p>Plots the mU-matrix; defined here as the data density per cell
 and the lines between cells representing the distance between
 adjacent cells.</p>
-<section id="id1">
-<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
+<p>This implementation mimicks the major aspects of the mU-matrix in
+NueroScope (refer to [cite figure such as such of mU-matrix paper]).</p>
+<p>Complete information on the NeuroScope implementation of the mU-matrix
+is given in respective NeuroScope documentation, available upon request from
+[Erzsébet Merényi](<a class="reference external" href="mailto:erzsebet&#37;&#52;&#48;rice">erzsebet<span>&#64;</span>rice</a>.edu| [</p>
+<p>Prof. Merényi was not consulted on the implementation of sciSOM functions that
+intend to mimic NeuroScope functionalities of the same name, nor did she have
+opportunity to inspect proof of faithfulness to the same-name module in NeuroScope
+or correctness of the corresponding sciSOM code. Therefore, Dr. Merényi and the
+NeuroScope group take no responsibility for the likeness and the correctness of
+the functions implemented to mimic (partial) NeuroScope capabilities in sciSOM.
+Parameters:
+——————-
+weight_cube : np.ndarray</p>
+<blockquote>
+<div><p>Weight cube after an SOM has been trained</p>
+</div></blockquote>
 <dl class="simple">
-<dt>weight_cube<span class="classifier">np.ndarray</span></dt><dd><p>Weight cube after an SOM has been trained</p>
-</dd>
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>Data used to train the SOM or data to be mapped to the SOM</p>
 </dd>
 <dt>set_costum_min_max<span class="classifier">bool</span></dt><dd><p>If True, the user can set the vmin and vmax for fences</p>
@@ -421,9 +433,8 @@ adjacent cells.</p>
 <dt>fence_on<span class="classifier">bool</span></dt><dd><p>If False removes fences from mU matrix image</p>
 </dd>
 </dl>
-</section>
-<section id="id2">
-<h3>Returns:<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
+<section id="id1">
+<h3>Returns:<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
 <p>:
 None</p>
 <dl class="field-list simple">
@@ -445,22 +456,22 @@ None</p>
 <dt class="field-odd">param fence_vmin<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 <dt class="field-even">type fence_vmin<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span></p>
 </dd>
 <dt class="field-odd">param fence_vmax<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 <dt class="field-even">type fence_vmax<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span></p>
 </dd>
 <dt class="field-odd">param density_vmin<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 <dt class="field-even">type density_vmin<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span></p>
 </dd>
 <dt class="field-odd">param density_vmax<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
 <dt class="field-even">type density_vmax<span class="colon">:</span></dt>
-<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.14)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a>]</span></p>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></span></p>
 </dd>
 <dt class="field-odd">param log_density<span class="colon">:</span></dt>
 <dd class="field-odd"><p></p></dd>
@@ -561,7 +572,7 @@ and outputs a grid of plots showing each cluster.</p>
 <li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.SOM_gird_avg_wavefrom_per_cell"><code class="docutils literal notranslate"><span class="pre">SOM_gird_avg_wavefrom_per_cell()</span></code></a></li>
 <li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.SOM_location_recall"><code class="docutils literal notranslate"><span class="pre">SOM_location_recall()</span></code></a></li>
 <li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.calculate_density_matrix"><code class="docutils literal notranslate"><span class="pre">calculate_density_matrix()</span></code></a></li>
-<li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.calculate_u_matrix"><code class="docutils literal notranslate"><span class="pre">calculate_u_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.calculate_distance_btw_adjacent_prototypes"><code class="docutils literal notranslate"><span class="pre">calculate_distance_btw_adjacent_prototypes()</span></code></a></li>
 <li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.display_density_matrix"><code class="docutils literal notranslate"><span class="pre">display_density_matrix()</span></code></a></li>
 <li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.plot_SOM_gird_neurons"><code class="docutils literal notranslate"><span class="pre">plot_SOM_gird_neurons()</span></code></a></li>
 <li><a class="reference internal" href="#sciSOM.Plotting.SOM_plots.plot_mU_matrix"><code class="docutils literal notranslate"><span class="pre">plot_mU_matrix()</span></code></a></li>
@@ -581,8 +592,8 @@ and outputs a grid of plots showing each cluster.</p>
     </aside>
   </div>
 </div><script src="_static/documentation_options.js?v=938c9ccc"></script>
-    <script src="_static/doctools.js?v=9a2dae69"></script>
-    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
     <script src="_static/clipboard.min.js?v=a7894cd8"></script>
     <script src="_static/copybutton.js?v=f281be69"></script>
